@@ -22,4 +22,5 @@ export default defineConfig({
       usePolling: true,
     },
   },
+  base: "/global-game-jam-2023/"
 });
