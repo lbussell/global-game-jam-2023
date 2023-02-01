@@ -1,13 +1,15 @@
 import Phaser from "phaser";
+import * as Constants from "./Constants"
 
 export default {
   type: Phaser.AUTO,
   parent: "game",
   backgroundColor: "#990099",
   scale: {
-    width: 800,
-    height: 600,
+    width: Constants.WINDOW_SIZE.w,
+    height: Constants.WINDOW_SIZE.h,
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
+  pixelArt: true
 };
