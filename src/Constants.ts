@@ -12,18 +12,3 @@ export interface Position {
     x: number;
     y: number;
 }
-
-export interface SpriteSheet extends Asset {
-    numSprites: number
-}
-
-export interface Asset {
-    key: string;
-    location: string;
-}
-
-export const TestTiles: SpriteSheet = {
-    key: "testTiles",
-    location: "assets/testTiles.png",
-    numSprites: 5
-}

@@ -3,8 +3,8 @@ import * as Constants from './Constants';
 import {
   Size,
   Position,
-  TestTiles, 
 } from './Constants';
+import { TestTiles } from './Assets';
 
 export default class Underground {
     private _tilemap: Phaser.Tilemaps.Tilemap;
