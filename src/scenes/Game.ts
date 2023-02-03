@@ -41,8 +41,8 @@ export default class World extends Phaser.Scene {
 
   create() {
     this.underground = new Underground(this);
-    this.addBitmapTextByLine(0, 0, 'bingus');
-    this.addBitmapTextByLine(0, 1, 'fingus');
+    this.addBitmapTextByLine(0, 0, 'fingus');
+    this.addBitmapTextByLine(0, 1, 'bingus');
     this.timeText = this.addBitmapText(0, 0, this.formatTimeString(0));
 
     // Don't add anything to this function below here
@@ -71,6 +71,10 @@ export default class World extends Phaser.Scene {
       }
 
       this.timeText?.setText(this.formatTimeString(time));
+
+      // Draw the grid
+      this.underground?.drawGrid();
+
     }
   }
 
