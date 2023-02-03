@@ -1,23 +1,19 @@
 import Phaser from 'phaser';
 
-import { Resources, ResourceTypeValue } from "./Constants"
-
-// enum Resource {
-//     water = "water",
-//     carbon = "carbon", 
-//     fertilizer = "fertilizer",
-//     nitrogen = "nitrogen"
-// }
-
 export default class GameManager {
 
-    public readonly branchParts: number;
+    // building materials
+    public branchParts: number = 0;
 
     // resources
-    public readonly resources: { [Key in ResourceTypeValue as string]: number } = { };
+    public nitrogen: number = 0;
+    public water: number = 0;
+    public oxygen: number = 0;
+    public fertilizer: number = 0;
 
     constructor() {
         this.branchParts = 10;
-        Resources.forEach(r => this.resources[r] = 0);
     }
+
+    // public getDebugInfo
 }

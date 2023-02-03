@@ -1,0 +1,60 @@
+import Phaser from "phaser";
+import { prependListener } from "process";
+import Perlin from './perlin';
+import {Resource, TilemapObject} from './Resources';
+
+export class ResourceGenerationData
+{
+    public _rarity : number;
+    public _resourceAmountMin : number;
+    public _resourceAmountMax : number;
+
+    constructor(rarity : number, resourceAmountMin : number, resourceAmountMax : number)
+    {
+        this._rarity = rarity;
+        this._resourceAmountMin = resourceAmountMin;
+        this._resourceAmountMax = resourceAmountMax;
+    }
+}
+
+export default class MapGenerator
+{
+    private _scene : Phaser.Scene;
+    private _mapDimensions : Phaser.Math.Vector2;
+    private _generationData : Map<Resource, ResourceGenerationData>;
+    private _noiseGenerator : Perlin; 
+    private _grid : TilemapObject[][];
+
+    constructor(scene : Phaser.Scene, mapDimensions : Phaser.Math.Vector2,
+        generationData : Map<Resource, ResourceGenerationData>)
+    {
+        this._scene = scene;
+        this._mapDimensions = mapDimensions;
+        this._generationData = generationData;
+        this._noiseGenerator = new Perlin();
+    }
+
+    public GenerateMap()
+    {
+        for (let r = 0; r < this._mapDimensions.y; ++r)
+        {
+            for (let c = 0; c < this._mapDimensions.x; ++c)
+            {
+                var perlinValue = this._noiseGenerator.perlin2(r / 100, c / 100);
+                var currentPerlinMin = 0;
+
+                this._generationData.forEach((value, key) =>
+                {
+                    var perlinMax = currentPerlinMin + value._rarity;
+                    if (perlinValue >= currentPerlinMin && perlinValue < perlinMax)
+                    {
+                        this._grid[r][c] = key;
+                    }
+                    currentPerlinMin = perlinMax;
+                })
+            }
+        }
+        
+        
+    }
+}

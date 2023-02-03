@@ -34,3 +34,26 @@ export const ArcadeFont: Font = {
     assetLocation: "assets/fonts/arcade.png",
     xmlLocation: "assets/fonts/arcade.xml"
 }
+
+export const AssetLoader = {
+    loadFont: (scene: Phaser.Scene, font: Font) =>
+        scene.load.bitmapFont(
+            font.key,
+            font.assetLocation,
+            font.xmlLocation
+        ),
+    loadSpriteSheet: (scene: Phaser.Scene, ss: SpriteSheet) =>
+        scene.load.spritesheet(
+            ss.key,
+            ss.assetLocation,
+            { 
+                frameWidth: ss.size.w,
+                frameHeight: ss.size.h 
+            }
+        ),
+    loadSprite: (scene: Phaser.Scene, s: Sprite) =>
+        scene.load.image(
+            s.key,
+            s.assetLocation
+        )
+}

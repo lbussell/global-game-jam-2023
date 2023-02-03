@@ -5,6 +5,7 @@ import {
   Position,
 } from '../Constants';
 import {
+  AssetLoader,
   Font,
   Asset,
   SpriteSheet,
@@ -40,9 +41,8 @@ export default class World extends Phaser.Scene {
   }
 
   preload() {
-    this.loadSpriteSheet(TestTiles);
-    this.loadSprite(RootSprite);
-    this.loadFont(ArcadeFont);
+    AssetLoader.loadSprite(this, RootSprite);
+    AssetLoader.loadSpriteSheet(this, TestTiles);
   }
 
   unload() {
@@ -123,35 +123,5 @@ export default class World extends Phaser.Scene {
       // Draw the grid
       this.underground?.drawGrid();
     }
-  }
-
-  formatTimeString(t: number): string {
-    return "t=" + t;
-  }
-
-  addBitmapText(x: number, y: number, s: string): Phaser.GameObjects.BitmapText {
-    return this.add.bitmapText(x, y, ArcadeFont.key, s).setOrigin(0).setScale(1);
-  }
-
-  addBitmapTextByLine(x: number, line: number, s: string): Phaser.GameObjects.BitmapText {
-    return this.add.bitmapText(x+4, 600-(32*line)-4, ArcadeFont.key, s).setOrigin(0, 1).setScale(1);
-  }
-
-  loadFont(font: Font) {
-    this.load.bitmapFont(font.key, font.assetLocation, font.xmlLocation);
-  }
-
-  loadSpriteSheet(ss: SpriteSheet) {
-    this.load.spritesheet(
-      ss.key,
-      ss.assetLocation,
-      { frameWidth: ss.size.w, frameHeight: ss.size.h }
-    );
-  }
-  
-  loadSprite(sprite: Sprite) {
-    this.load.image(
-      sprite.key,
-      sprite.assetLocation);
   }
 }

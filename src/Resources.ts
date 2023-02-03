@@ -26,14 +26,6 @@ export const Root: TilemapObject = {
 
 // 2 = red
 
-export const Nitrogen = (quantity: number): Resource => {
-    return {
-        tilemapIndex: 1,
-        resourceQuantity: quantity,
-        tilemapLayer: TilemapLayer.Resources
-    }
-}
-
 export const Water = (quantity: number): Resource => {
     return {
         tilemapIndex: 0,
@@ -42,7 +34,7 @@ export const Water = (quantity: number): Resource => {
     }
 }
 
-export const Carbon = (quantity: number): Resource => {
+export const Potassium = (quantity: number): Resource => {
     return {
         tilemapIndex: 3,
         resourceQuantity: quantity,
@@ -50,7 +42,7 @@ export const Carbon = (quantity: number): Resource => {
     }
 }
 
-export const Fertilizer = (quantity: number): Resource => {
+export const Sunlight = (quantity: number): Resource => {
     return {
         tilemapIndex: 4,
         resourceQuantity: quantity,
