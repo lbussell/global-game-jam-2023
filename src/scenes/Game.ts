@@ -26,6 +26,7 @@ export default class World extends Phaser.Scene {
   private underground?: Underground;
   private roots?: Roots
   private clicked: integer;
+  private lastGhost: number = 0;
 
   private timeText?: Phaser.GameObjects.BitmapText;
 
@@ -102,6 +103,7 @@ export default class World extends Phaser.Scene {
       {
         if (this.clicked + 300 < time )
         {
+
           // LEGACY CONTROLLER:
           // this.underground?.click(worldPoint);
 
@@ -110,6 +112,12 @@ export default class World extends Phaser.Scene {
           this.clicked = time;
         }
       }
+      else if (this.lastGhost + 50 < time)
+      {
+        this.roots?.ghostTo(worldPoint);
+        this.lastGhost = time;
+      }
+
       this.timeText?.setText(this.formatTimeString(time));
 
       // Draw the grid

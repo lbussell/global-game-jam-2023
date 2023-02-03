@@ -14,8 +14,13 @@ export default class Root {
     private _underground: Underground;
 
     private _allRopes: Phaser.GameObjects.Rope[];
+    private _ghostRope: Phaser.GameObjects.Rope | undefined = undefined;
+    private _ghostPoints: Phaser.Math.Vector2[];
+    private _ghostColor = Phaser.Display.Color.GetColor32(75, 180, 180, 150);
 
     private _growthDistance = 8;
+    private _maxGhosts = 100;
+    private _maxAngleRadians = 0.06;
 
     constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground) {
         this._scene = scene;
@@ -32,9 +37,90 @@ export default class Root {
         this._allPoints = [];
         this._allPoints.concat(this._lastPoints);
 
+        this._ghostPoints = [];
+
         // Track all ropes in the "full" rope
         this._allRopes = [];
         this._allRopes.push(scene.add.rope(0, 0, RootSprite.key, undefined, this._lastPoints, false));
+    }
+
+    // Returns closest point of the root to the given point, and its direction vector
+    // TODO: Favors existing root ends
+    // TODO: Returns undefinied direction if the closest point is a new branch
+    getClosestPoint(worldPoint: Phaser.Math.Vector2): [Phaser.Math.Vector2, Phaser.Math.Vector2 | undefined] {
+        return [this._lastPoints[this._lastPoints.length - 1],
+            (this._lastPoints[this._lastPoints.length - 1].clone().subtract(this._lastPoints[this._lastPoints.length - 2])).normalize()];
+    }
+
+    // Draws a ghost of root to the given position
+    ghostTo(worldPoint: Phaser.Math.Vector2): boolean {
+        // Clear ghost ropes
+        if (this._ghostRope != undefined)
+        {
+            this._ghostRope.destroy();
+        }
+
+        let closest = this.getClosestPoint(worldPoint);
+
+        // TODO: Add maximum angle to branches? (From perpendicular)
+        if (closest[1] == undefined)
+        {
+            closest[1] = closest[0].clone()
+                .subtract(worldPoint)
+                .normalize();
+        }
+
+        let currentDirection = closest[1].clone();
+
+        this._ghostPoints = [];
+        this._ghostPoints.push(closest[0].clone());
+
+        // Build ghost points
+        while (this._ghostPoints.length < this._maxGhosts && this._ghostPoints[this._ghostPoints.length - 1].distance(worldPoint) > 2)
+        {
+            let direction = this._ghostPoints[this._ghostPoints.length-1].clone()
+                .subtract(worldPoint)
+                .normalize();
+
+            let angle = Math.acos(direction.clone().dot(currentDirection));
+
+            // If this point is turning too far, limit turn
+            if (angle > this._maxAngleRadians && Math.abs(angle - Math.PI * 2) > this._maxAngleRadians)
+            {
+                let testDir1 = new Phaser.Math.Vector2(
+                    Math.cos(this._maxAngleRadians)*currentDirection.x - Math.sin(this._maxAngleRadians)*currentDirection.y,
+                    Math.sin(this._maxAngleRadians)*currentDirection.x + Math.cos(this._maxAngleRadians)*currentDirection.y).normalize();
+                
+                let testDir2 = new Phaser.Math.Vector2(
+                    Math.cos(2 * Math.PI - this._maxAngleRadians)*currentDirection.x - Math.sin(2 * Math.PI - this._maxAngleRadians)*currentDirection.y,
+                    Math.sin(2 * Math.PI - this._maxAngleRadians)*currentDirection.x + Math.cos(2 * Math.PI - this._maxAngleRadians)*currentDirection.y).normalize();
+
+                if (Math.acos(testDir1.clone().dot(direction)) > Math.acos(testDir2.clone().dot(direction)))
+                {
+                    direction = testDir1;
+                }
+                else
+                {
+                    direction = testDir2;
+                }
+            }
+
+            // Add point and update direction
+            this._ghostPoints.push(this._ghostPoints[this._ghostPoints.length - 1].clone().add(direction))
+            currentDirection = direction;
+        }
+
+        // Set colors
+        let colors = []
+        for (let i=0; i<this._ghostPoints.length; i++)
+        {
+            colors.push(this._ghostColor);
+        }
+
+        // Draw Ghost rope
+        this._ghostRope = this._scene.add.rope(0, 0, RootSprite.key, undefined, this._ghostPoints, false, colors);
+
+        return true;
     }
 
     // Attempts to add a new point to the end of the Roots
@@ -47,31 +133,13 @@ export default class Root {
             return false;
         }
 
-        // Calculate normalized direction to create point in
-        let direction = worldPoint
-            .subtract(this._lastPoints[this._lastPoints.length - 1])
-            .normalize()
-            .scale(this._growthDistance);
-
-        // Create new point
-        let newHead = this._lastPoints[this._lastPoints.length - 1].clone().add(direction);
-
-        // Get the tile the point will be inside! (Important for resource detection, blocking objects?)
-        let tileObject = this._underground.getTilemapObjectAtWorldPos(newHead);
-        if (tileObject != null)
-        {
-            console.log("Placing inside of a ", tileObject.tilemapIndex, " type tile!");
-        }
-
-        // Shift down all points in the "active" points array
-        for (let i=0; i<this._lastPoints.length - 1; i++)
-        {
-            this._lastPoints[i] = this._lastPoints[i+1];
-        }
-
         // Insert new point
-        this._lastPoints[this._lastPoints.length - 1] = newHead;
-        this._allPoints.push(newHead);
+        this._lastPoints = this._ghostPoints;
+
+        for (let i=0; i<this._lastPoints.length; i++)
+        {
+            this._allPoints.push(this._lastPoints[i]);
+        }
 
         // Create new rope using the current point set
         this._allRopes.push(this._scene.add.rope(0, 0, RootSprite.key, undefined, this._lastPoints, false));
