@@ -10,6 +10,9 @@ export interface SpriteSheet extends Asset {
     size: Size
 }
 
+export interface Sprite extends Asset {
+}
+
 export interface Font extends Asset {
     xmlLocation: string;
 };
@@ -19,6 +22,11 @@ export const TestTiles: SpriteSheet = {
     assetLocation: "assets/testTiles.png",
     numSprites: 5,
     size: { h: TILE_SIZE, w: TILE_SIZE }
+}
+
+export const RootSprite: Sprite = {
+    key: "root",
+    assetLocation: "assets/testRoot3.png"
 }
 
 export const ArcadeFont: Font = {

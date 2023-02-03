@@ -8,10 +8,13 @@ import {
   Font,
   Asset,
   SpriteSheet,
+  Sprite,
   TestTiles,
+  RootSprite,
   ArcadeFont
 } from '../Assets';
 import Underground from '../Underground';
+import Roots from "../Roots";
 import InputManager from "../InputManager";
 import CameraManager from "../CameraManager";
 
@@ -21,14 +24,15 @@ export default class World extends Phaser.Scene {
   private cameraManager?: CameraManager;
   private inputManager?: InputManager;
   private underground?: Underground;
-  private clicked: boolean;
+  private roots?: Roots
+  private clicked: integer;
 
   private timeText?: Phaser.GameObjects.BitmapText;
 
   constructor() {
     super("GameScene");
     this.isLoaded = false;
-    this.clicked = false;
+    this.clicked = 0;
 
     // stuff that will be loaded in create()
     this.timeText = undefined;
@@ -36,6 +40,7 @@ export default class World extends Phaser.Scene {
 
   preload() {
     this.loadSpriteSheet(TestTiles);
+    this.loadSprite(RootSprite);
     this.loadFont(ArcadeFont);
   }
 
@@ -46,7 +51,7 @@ export default class World extends Phaser.Scene {
   create() {
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
-    this.underground = new Underground(this);
+    this.underground = new Underground(this, this.cameras.main);
 
     // test text.. later, add this to its own UI scene that sits on top of this scene
     // this.addBitmapTextByLine(0, 0, 'fingus');
@@ -75,9 +80,11 @@ export default class World extends Phaser.Scene {
       })
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY), this.cameras.main);
+      this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY));
     });
 
+
+    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
 
     // Don't add anything to this function below here
     this.isLoaded = true;
@@ -89,6 +96,20 @@ export default class World extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     if (this.isLoaded) {
+      const worldPoint: Phaser.Math.Vector2 = <Phaser.Math.Vector2> this.input.activePointer.positionToCamera(this.cameras.main);
+
+      if (this.input.manager.activePointer.isDown)
+      {
+        if (this.clicked + 300 < time )
+        {
+          // LEGACY CONTROLLER:
+          // this.underground?.click(worldPoint);
+
+          this.roots?.addPoint(worldPoint);
+
+          this.clicked = time;
+        }
+      }
       this.timeText?.setText(this.formatTimeString(time));
 
       // Draw the grid
@@ -118,5 +139,11 @@ export default class World extends Phaser.Scene {
       ss.assetLocation,
       { frameWidth: ss.size.w, frameHeight: ss.size.h }
     );
+  }
+  
+  loadSprite(sprite: Sprite) {
+    this.load.image(
+      sprite.key,
+      sprite.assetLocation);
   }
 }

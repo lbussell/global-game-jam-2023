@@ -22,12 +22,14 @@ import { TilemapObject } from "./Resources";
 export default class Underground {
     private _tilemap: Phaser.Tilemaps.Tilemap;
     private _scene: Phaser.Scene;
+    private _camera: Phaser.Cameras.Scene2D.Camera;
     private _seed: number;
 
     private _undergroundGrid: (TilemapObject | null)[][];
 
-    constructor(scene: Phaser.Scene, seed: number = 0) {
+    constructor(scene: Phaser.Scene, camera: Phaser.Cameras.Scene2D.Camera, seed: number = 0) {
         this._scene = scene;
+        this._camera = camera;
         this._seed = seed;
 
         this._tilemap = this._scene.make.tilemap({
@@ -78,10 +80,11 @@ export default class Underground {
         // this._tilemap.on
     }
 
-    click(worldPoint: Phaser.Math.Vector2, camera: Phaser.Cameras.Scene2D.Camera): boolean {
+    // OUTDATED logic to add roots to GRID
+    click(worldPoint: Phaser.Math.Vector2): boolean {
         const pos: Position = {
-            x: this._tilemap.worldToTileX(worldPoint.x, undefined, camera),
-            y: this._tilemap.worldToTileY(worldPoint.y, undefined, camera)
+            x: this._tilemap.worldToTileX(worldPoint.x, undefined, this._camera),
+            y: this._tilemap.worldToTileY(worldPoint.y, undefined, this._camera)
         };
         return this.placeRoot(pos);
     }
@@ -106,6 +109,18 @@ export default class Underground {
         return false;
     }
 
+    getTilemapObjectAtWorldPos(position: Phaser.Math.Vector2): TilemapObject | null {
+        let tilePosition = this._tilemap.worldToTileXY(position.x, position.y, undefined, undefined, this._camera);
+
+        if (this.isOutOfBounds(tilePosition))
+        {
+            return null;
+        }
+
+        return this._undergroundGrid[tilePosition.x][tilePosition.y];
+    }
+
+    // OUTDATED logic to add roots to GRID
     placeRoot(pos: Position): boolean {
         // Verify adjacent root
         let isAdjacent: boolean = false;
@@ -134,4 +149,6 @@ export default class Underground {
         // Return true if the action was successful
         return isAdjacent;
     }
+
+
 }
