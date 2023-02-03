@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser, { Input } from "phaser";
 import * as Constants from '../Constants';
 import {
   Size,
@@ -12,10 +12,14 @@ import {
   ArcadeFont
 } from '../Assets';
 import Underground from '../Underground';
+import InputManager from "../InputManager";
+import CameraManager from "../CameraManager";
 
 export default class World extends Phaser.Scene {
-
   private isLoaded: boolean;
+
+  private cameraManager?: CameraManager;
+  private inputManager?: InputManager;
   private underground?: Underground;
   private clicked: boolean;
 
@@ -40,10 +44,40 @@ export default class World extends Phaser.Scene {
   }
 
   create() {
+    this.cameraManager = new CameraManager(this);
+    this.inputManager = new InputManager(this);
     this.underground = new Underground(this);
-    this.addBitmapTextByLine(0, 0, 'fingus');
-    this.addBitmapTextByLine(0, 1, 'bingus');
-    this.timeText = this.addBitmapText(0, 0, this.formatTimeString(0));
+
+    // test text.. later, add this to its own UI scene that sits on top of this scene
+    // this.addBitmapTextByLine(0, 0, 'fingus');
+    // this.addBitmapTextByLine(0, 1, 'bingus');
+    // this.timeText = this.addBitmapText(0, 0, this.formatTimeString(0));
+
+    // this.cameras.main.
+
+    this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos())
+
+    this.input.on('wheel',
+      (
+        pointer: Phaser.Input.Pointer,
+        foo: number,
+        deltaX: number,
+        deltaY: number,
+        event: Phaser.Types.Input.EventData
+      ) => {
+        console.log(deltaY)
+        if (deltaY > 0) {
+          this.cameraManager?.MoveCameraUp();
+        }
+        if (deltaY < 0) {
+          this.cameraManager?.MoveCameraDown();
+        }
+      })
+
+    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY), this.cameras.main);
+    });
+
 
     // Don't add anything to this function below here
     this.isLoaded = true;
@@ -55,26 +89,10 @@ export default class World extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     if (this.isLoaded) {
-      const worldPoint: Phaser.Math.Vector2 = <Phaser.Math.Vector2> this.input.activePointer.positionToCamera(this.cameras.main);
-
-      if (this.input.manager.activePointer.isDown)
-      {
-        if (!this.clicked)
-        {
-          this.underground?.click(worldPoint);
-          this.clicked = true;
-        }
-      }
-      else
-      {
-        this.clicked = false;
-      }
-
       this.timeText?.setText(this.formatTimeString(time));
 
       // Draw the grid
       this.underground?.drawGrid();
-
     }
   }
 

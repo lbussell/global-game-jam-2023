@@ -4,7 +4,7 @@ import * as Constants from "./Constants"
 export default {
   type: Phaser.AUTO,
   parent: "game",
-  backgroundColor: "#990099",
+  backgroundColor: "#6c90a4",
   scale: {
     width: Constants.WINDOW_SIZE.w,
     height: Constants.WINDOW_SIZE.h,
