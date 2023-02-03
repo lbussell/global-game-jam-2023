@@ -77,6 +77,7 @@ export default class Underground {
         this.placeRoot(rootOrigin);
     }
 
+    // OUTDATED logic to add roots to GRID
     click(worldPoint: Phaser.Math.Vector2): boolean {
         const pos: Position = {
             x: this._tilemap.worldToTileX(worldPoint.x),
@@ -105,6 +106,18 @@ export default class Underground {
         return false;
     }
 
+    getTilemapObjectAtWorldPos(position: Phaser.Math.Vector2): TilemapObject | null {
+        let tilePosition = this._tilemap.worldToTileXY(position.x, position.y);
+
+        if (this.isOutOfBounds(tilePosition))
+        {
+            return null;
+        }
+
+        return this._undergroundGrid[tilePosition.x][tilePosition.y];
+    }
+
+    // OUTDATED logic to add roots to GRID
     placeRoot(pos: Position): boolean {
         // Verify adjacent root
         let isAdjacent: boolean = false;
@@ -133,4 +146,6 @@ export default class Underground {
         // Return true if the action was successful
         return isAdjacent;
     }
+
+
 }

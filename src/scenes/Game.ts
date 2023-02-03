@@ -8,23 +8,27 @@ import {
   Font,
   Asset,
   SpriteSheet,
+  Sprite,
   TestTiles,
+  RootSprite,
   ArcadeFont
 } from '../Assets';
 import Underground from '../Underground';
+import Roots from "../Roots";
 
 export default class World extends Phaser.Scene {
 
   private isLoaded: boolean;
   private underground?: Underground;
-  private clicked: boolean;
+  private roots?: Roots
+  private clicked: integer;
 
   private timeText?: Phaser.GameObjects.BitmapText;
 
   constructor() {
     super("GameScene");
     this.isLoaded = false;
-    this.clicked = false;
+    this.clicked = 0;
 
     // stuff that will be loaded in create()
     this.timeText = undefined;
@@ -32,6 +36,7 @@ export default class World extends Phaser.Scene {
 
   preload() {
     this.loadSpriteSheet(TestTiles);
+    this.loadSprite(RootSprite);
     this.loadFont(ArcadeFont);
   }
 
@@ -44,6 +49,8 @@ export default class World extends Phaser.Scene {
     this.addBitmapTextByLine(0, 0, 'fingus');
     this.addBitmapTextByLine(0, 1, 'bingus');
     this.timeText = this.addBitmapText(0, 0, this.formatTimeString(0));
+
+    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
 
     // Don't add anything to this function below here
     this.isLoaded = true;
@@ -59,15 +66,15 @@ export default class World extends Phaser.Scene {
 
       if (this.input.manager.activePointer.isDown)
       {
-        if (!this.clicked)
+        if (this.clicked + 300 < time )
         {
-          this.underground?.click(worldPoint);
-          this.clicked = true;
+          // LEGACY CONTROLLER:
+          // this.underground?.click(worldPoint);
+
+          this.roots?.addPoint(worldPoint);
+
+          this.clicked = time;
         }
-      }
-      else
-      {
-        this.clicked = false;
       }
 
       this.timeText?.setText(this.formatTimeString(time));
@@ -100,5 +107,11 @@ export default class World extends Phaser.Scene {
       ss.assetLocation,
       { frameWidth: ss.size.w, frameHeight: ss.size.h }
     );
+  }
+  
+  loadSprite(sprite: Sprite) {
+    this.load.image(
+      sprite.key,
+      sprite.assetLocation);
   }
 }
