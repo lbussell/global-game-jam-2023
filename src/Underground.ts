@@ -75,12 +75,13 @@ export default class Underground {
         layerRoot.putTileAt(Root.tilemapIndex, rootOrigin.x, rootOrigin.y, true);
         this._undergroundGrid[rootOrigin.y][rootOrigin.x] = Root;
         this.placeRoot(rootOrigin);
+        // this._tilemap.on
     }
 
-    click(worldPoint: Phaser.Math.Vector2): boolean {
+    click(worldPoint: Phaser.Math.Vector2, camera: Phaser.Cameras.Scene2D.Camera): boolean {
         const pos: Position = {
-            x: this._tilemap.worldToTileX(worldPoint.x),
-            y: this._tilemap.worldToTileY(worldPoint.y)
+            x: this._tilemap.worldToTileX(worldPoint.x, undefined, camera),
+            y: this._tilemap.worldToTileY(worldPoint.y, undefined, camera)
         };
         return this.placeRoot(pos);
     }
