@@ -24,15 +24,35 @@ export const TestTiles: SpriteSheet = {
     size: { h: TILE_SIZE, w: TILE_SIZE }
 }
 
+export const ArcadeFont: Font = {
+    key: "arcadeFont",
+    assetLocation: "assets/fonts/arcade.png",
+    xmlLocation: "assets/fonts/arcade.xml"
+}
+
 export const RootSprite: Sprite = {
     key: "root",
     assetLocation: "assets/testRoot3.png"
 }
 
-export const ArcadeFont: Font = {
-    key: "arcadeFont",
-    assetLocation: "assets/fonts/arcade.png",
-    xmlLocation: "assets/fonts/arcade.xml"
+export const SunIcon: Sprite = {
+    key: "sun",
+    assetLocation: "assets/icons/sun.png"
+}
+
+export const PotassiumIcon: Sprite = {
+    key: "k",
+    assetLocation: "assets/icons/k.png"
+}
+
+export const WaterIcon: Sprite = {
+    key: "h2o",
+    assetLocation: "assets/icons/h2o.png"
+}
+
+export const GlucoseIcon: Sprite = {
+    key: "glucose",
+    assetLocation: "assets/icons/glucose.png"
 }
 
 export const AssetLoader = {

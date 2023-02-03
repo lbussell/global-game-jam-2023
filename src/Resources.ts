@@ -42,10 +42,10 @@ export const Potassium = (quantity: number): Resource => {
     }
 }
 
-export const Sunlight = (quantity: number): Resource => {
-    return {
-        tilemapIndex: 4,
-        resourceQuantity: quantity,
-        tilemapLayer: TilemapLayer.Resources
-    }
-}
+// export const Sunlight = (quantity: number): Resource => {
+//     return {
+//         tilemapIndex: 4,
+//         resourceQuantity: quantity,
+//         tilemapLayer: TilemapLayer.Resources
+//     }
+// }
