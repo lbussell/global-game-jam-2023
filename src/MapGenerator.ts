@@ -34,13 +34,11 @@ export default class MapGenerator
 
     public GenerateMap()
     {
-        var densityMaps = null;
+        var densityMaps : Map<Resource, number[][]>;
 
         this._generationData.forEach((value, key) =>
         {
             var densityMap = Array.from(Array(this._mapDimensions.y), () => Array.from({length: this._mapDimensions.x}, () => Math.random() * value._rarity))
-            
-        
         })
 
         for (let r = 0; r < this._mapDimensions.y; ++r)

@@ -9,12 +9,19 @@ import {
     WaterIcon,
 } from "../Assets";
 import { TILE_SCALE, TILE_SIZE, WINDOW_SIZE } from "../Constants";
+import World from "./Game";
+import { Potassium } from "../Resources";
+import { ResourceAmounts } from "../GameManager";
 
 export default class UI extends Phaser.Scene {
     private _isLoaded: boolean;
-    private _gameScene?: Phaser.Scene;
+    private _gameScene?: World;
+
     private _bottomRect?: Phaser.GameObjects.Rectangle;
     private readonly _bottomRectHeightInTiles: number = 3;
+    private _rightRect?: Phaser.GameObjects.Rectangle;
+    private readonly _rightRectWidthInTiles: number = 3;
+    private _menuBGColor: number = 0x000000; // black
 
     private _sunText?: Phaser.GameObjects.BitmapText;
     private _waterText?: Phaser.GameObjects.BitmapText;
@@ -39,55 +46,87 @@ export default class UI extends Phaser.Scene {
     }
 
     create() {
-        this.addBitmapText(0, 0, "deez nuts");
-        this._gameScene = this.scene.get("GameScene");
-        this._bottomRect = this.add.rectangle(
-            0,
-            WINDOW_SIZE.h - this._bottomRectHeightInTiles*TILE_SIZE*TILE_SCALE,
-            WINDOW_SIZE.w,
-            this._bottomRectHeightInTiles*TILE_SIZE*TILE_SCALE,
-            0x000000
-        ).setOrigin(0, 0);
+        // we just know that this is type World
+        this._gameScene = <World> this.scene.get("GameScene");
 
-        const pad = 4;
-        const padTop = WINDOW_SIZE.h - this._bottomRectHeightInTiles*TILE_SIZE*TILE_SCALE + pad*TILE_SCALE;
-        const padLeft = pad*TILE_SCALE;
+        const scaledTileSize = TILE_SIZE*TILE_SCALE;
 
-        const tile = TILE_SIZE*TILE_SCALE;
+        const menuTopLeftAnchor = WINDOW_SIZE.w - this._rightRectWidthInTiles*scaledTileSize;
 
-        const textPadTop = padTop + TILE_SCALE*2;
-        const textToIcon = TILE_SCALE*18;
+        this._rightRect = this.add.rectangle(
+            menuTopLeftAnchor, // x
+            0, // y
+            this._rightRectWidthInTiles*scaledTileSize, // w
+            WINDOW_SIZE.h, // h,
+            this._menuBGColor
+        ).setOrigin(0, 0) // top left
 
-        const sunLeftIcon = padLeft;
-        this.addSprite(sunLeftIcon, padTop, SunIcon);
-        this._sunText = this.addBitmapText(sunLeftIcon + textToIcon, textPadTop, "69");
+        // math for placing text and other ui elements //
 
-        const waterLeftIcon = padLeft + tile*8;
-        this.addSprite(waterLeftIcon, padTop, WaterIcon);
-        this._waterText = this.addBitmapText(waterLeftIcon + textToIcon, textPadTop, "420");
+        const pad = TILE_SCALE*4;
 
-        const potasLeftIcon = padLeft + tile*16;
-        this.addSprite(potasLeftIcon, padTop, PotassiumIcon);
-        this._potasText = this.addBitmapText(potasLeftIcon + textToIcon, textPadTop, "666");
+        const sloty = (slot: number): number => pad + scaledTileSize*4*(slot-1);
 
-        const glucoseLeftIcon = padLeft + tile*24;
-        this.addSprite(padLeft + tile*24, padTop, GlucoseIcon);
-        this._glucoseText = this.addBitmapText(glucoseLeftIcon + textToIcon, textPadTop, "1337");
+        const addMenuIcon = (slot: number, sprite: Sprite): Phaser.GameObjects.Sprite => 
+            this.addSprite(
+                menuTopLeftAnchor + pad,
+                sloty(slot),
+                sprite);
 
-        // don't add to this function below this line
+        const addMenuText = (slot: number, text: string): Phaser.GameObjects.BitmapText =>
+            this.addBitmapText(
+                menuTopLeftAnchor + this._rightRectWidthInTiles*scaledTileSize/2,
+                sloty(slot) + /* dist from slot top to text */ TILE_SCALE*18,
+                text,
+                0.5
+            );
+
+        addMenuIcon(1, SunIcon);
+        this._sunText = addMenuText(1, "69");
+
+        addMenuIcon(2, WaterIcon);
+        this._waterText = addMenuText(2, "420");
+
+        addMenuIcon(3, PotassiumIcon);
+        this._potasText = addMenuText(3, "666");
+
+        addMenuIcon(4, GlucoseIcon);
+        this._glucoseText = addMenuText(4, "1337");
+
+        // addMenuIcon(5, PotassiumIcon)
+        // /* this._sunText = */ addMenuText(5, "9999");
+        // addMenuIcon(6, PotassiumIcon)
+        // /* this._sunText = */ addMenuText(6, "uwu");
+
         this._isLoaded = true;
     }
     
-    update() {
+    update(time: number, delta: number): void {
+        if (this._isLoaded && this._gameScene?.isLoaded) {
+            if (this._gameScene.gameManager?.resourceAmounts != undefined) {
+                this.updateResourceUI(this._gameScene.gameManager.resourceAmounts);
+            }
+        }
+    }
 
+    updateResourceUI(r: ResourceAmounts): void {
+        if (this._isLoaded) {
+            this._sunText?.setText(r.sunlightCollectionRate.toFixed(0).toString());
+            this._potasText?.setText(r.potassium.toFixed(0).toString());
+            this._waterText?.setText(r.water.toFixed(0).toString());
+            this._glucoseText?.setText(r.glucose.toFixed(0).toString());
+        }
     }
 
     addSprite(x: number, y: number, s: Sprite) {
         return this.add.sprite(x, y, s.key).setOrigin(0, 0).setScale(TILE_SCALE);
     }
 
-    addBitmapText(x: number, y: number, s: string): Phaser.GameObjects.BitmapText {
-        return this.add.bitmapText(x, y, ArcadeFont.key, s).setOrigin(0).setScale(1);
+    addBitmapText(x: number, y: number, s: string, originx: number = 0, originy: number = 0): Phaser.GameObjects.BitmapText {
+        return this.add.bitmapText(x, y, ArcadeFont.key, s)
+            .setOrigin(originx, originy)
+            .setScale(1)
+            .setFontSize(16);
     }
 
     addBitmapTextByLine(x: number, line: number, s: string): Phaser.GameObjects.BitmapText {

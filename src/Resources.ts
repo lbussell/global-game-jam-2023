@@ -10,8 +10,10 @@ export interface TilemapObject {
     tilemapLayer: TilemapLayer
 }
 
-export interface Resource extends TilemapObject {
+export interface ResourceTile extends TilemapObject {
+    type: ResourceTileType,
     resourceQuantity: number,
+    ratePerSec: number
 }
 
 export const Dirt: TilemapObject = {
@@ -24,19 +26,28 @@ export const Root: TilemapObject = {
     tilemapLayer: TilemapLayer.Root
 };
 
+export enum ResourceTileType {
+    Water = "water",
+    Potassium = "potassium"
+}
+
 // 2 = red
 
-export const Water = (quantity: number): Resource => {
+export const Water = (quantity: number): ResourceTile => {
     return {
+        type: ResourceTileType.Water,
         tilemapIndex: 0,
         resourceQuantity: quantity,
+        ratePerSec: 1,
         tilemapLayer: TilemapLayer.Resources
     }
 }
 
-export const Potassium = (quantity: number): Resource => {
+export const Potassium = (quantity: number): ResourceTile => {
     return {
+        type: ResourceTileType.Potassium,
         tilemapIndex: 3,
+        ratePerSec: 1,
         resourceQuantity: quantity,
         tilemapLayer: TilemapLayer.Resources
     }
