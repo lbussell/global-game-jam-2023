@@ -124,8 +124,6 @@ export default class Root {
             }
         }
 
-        console.log("Best: " + bestPoints.length)
-
         this.drawGhost(bestPoints);
 
         return true;
