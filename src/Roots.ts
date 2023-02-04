@@ -85,35 +85,89 @@ export default class Root {
             closestPointDirection];
     }
 
-    // Draws a ghost of root to the given position
-    ghostTo(worldPoint: Phaser.Math.Vector2): boolean {
+    findAndDrawBestGhost(worldPoint: Phaser.Math.Vector2): boolean {
+        if (this._allPoints.length < 1)
+        {
+            return false;
+        }
+
+        let bestPoints: Phaser.Math.Vector2[] = [];
+        let bestPointsDistance = 1000000;
+
+        for (let i=1; i<this._allPoints.length; i++)
+        {
+            // Cannot move upwards, so only consider points on or above the current level
+            if (worldPoint.y < this._allPoints[i].y)
+            {
+                continue;
+            }
+
+            // Check if starting at this points gets closer
+            let currentStart = this._allPoints[i];
+            let currentStartDirection = this._allPoints[i].clone().subtract(this._allPoints[i- 1]).normalize();
+            let points = this.getGhostPointsTo(worldPoint, currentStart, currentStartDirection);
+            let distance = worldPoint.distanceSq(points[points.length - 1]);
+
+            // If we already have a perfect route, find the shorter one
+            if (bestPointsDistance < this._growthDistance * this._growthDistance 
+                && distance < this._growthDistance * this._growthDistance
+                && points.length < bestPoints.length)
+            {
+                bestPoints = points;
+                bestPointsDistance = worldPoint.distanceSq(points[points.length - 1]);
+            }
+            // If we don't have a perfect route, find closer
+            else if (distance < bestPointsDistance)
+            {
+                bestPoints = points;
+                bestPointsDistance = worldPoint.distanceSq(points[points.length - 1]);
+            }
+        }
+
+        this.drawGhost(bestPoints);
+
+        return true;
+    }
+
+    drawGhost(points: Phaser.Math.Vector2[]): void {
+        // Cannot draw if we don't have at least 2 points
+        if (points.length < 2)
+        {
+            return;
+        }
+
         // Clear ghost ropes
         if (this._ghostRope != undefined)
         {
             this._ghostRope.destroy();
         }
 
-        let closest = this.getClosestPoint(worldPoint);
+        this._ghostPoints = points;
 
-        // TODO: Add maximum angle to branches? (From perpendicular)
-        if (closest[1] == undefined)
+        // Set colors
+        let colors = []
+        for (let i=0; i<this._ghostPoints.length; i++)
         {
-            closest[1] = worldPoint.clone()
-                .subtract(closest[0])
-                .normalize();
+            colors.push(this._ghostColor);
         }
 
-        let currentDirection = closest[1].clone();
+        // Draw Ghost rope
+        this._ghostRope = this._scene.add.rope(0, 0, RootSprite.key, undefined, points, false, colors);
+    }
 
-        this._ghostPoints = [];
-        this._ghostPoints.push(closest[0].clone());
+    // Draws a ghost of root to the given position
+    getGhostPointsTo(worldPoint: Phaser.Math.Vector2, startPoint: Phaser.Math.Vector2, startDirection: Phaser.Math.Vector2): Phaser.Math.Vector2[] {
+        let points = [];
+        points.push(startPoint);
+
+        let currentDirection = startDirection;
 
         let lastDistance = 100000;
 
         // Build ghost points
-        while (this._ghostPoints.length < this._maxGhosts && this._ghostPoints[this._ghostPoints.length - 1].distance(worldPoint) > this._growthDistance)
+        while (points.length < this._maxGhosts && points[points.length - 1].distance(worldPoint) > this._growthDistance)
         {
-            let direction = this._ghostPoints[this._ghostPoints.length-1].clone()
+            let direction = points[points.length-1].clone()
                 .subtract(worldPoint)
                 .normalize();
 
@@ -156,7 +210,7 @@ export default class Root {
             }
 
             // Add point and update direction
-            let newPoint = this._ghostPoints[this._ghostPoints.length - 1].clone().add(direction);
+            let newPoint = points[points.length - 1].clone().add(direction);
 
             // Do not add new point if we are getting further from the desired point
             if (newPoint.distanceSq(worldPoint) > lastDistance)
@@ -168,27 +222,11 @@ export default class Root {
                 lastDistance = newPoint.distanceSq(worldPoint)
             }
 
-            this._ghostPoints.push(newPoint)
+            points.push(newPoint)
             currentDirection = direction;
         }
-
-        // Cannot draw if we don't have at least 2 points
-        if (this._ghostPoints.length < 2)
-        {
-            return false;
-        }
-
-        // Set colors
-        let colors = []
-        for (let i=0; i<this._ghostPoints.length; i++)
-        {
-            colors.push(this._ghostColor);
-        }
-
-        // Draw Ghost rope
-        this._ghostRope = this._scene.add.rope(0, 0, RootSprite.key, undefined, this._ghostPoints, false, colors);
-
-        return true;
+        
+        return points;
     }
 
     // Attempts to add a new point to the end of the Roots
