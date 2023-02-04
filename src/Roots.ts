@@ -22,6 +22,7 @@ export default class Root {
     private _maxGhosts = 100;
     private _maxAngleRadians = 0.06;
     private _upAngleRestriction = Math.PI / 2;
+    private _explorationPoints = 20;
 
     private _upVector = new Phaser.Math.Vector2(0, -1);
     private _leftVector = new Phaser.Math.Vector2(-1, 0);
@@ -91,11 +92,53 @@ export default class Root {
             return false;
         }
 
-        let bestPoints: Phaser.Math.Vector2[] = [];
-        let bestPointsDistance = 1000000;
+        let closestPointIndexes: number[] = [];
+        let cloesestPointDistances: number[] = [];
+        for (let i=0; i<this._explorationPoints; i++)
+        {
+            closestPointIndexes.push(-1);
+            cloesestPointDistances.push(1000000);
+        }
 
         for (let i=1; i<this._allPoints.length; i++)
         {
+            // Cannot move upwards, so only consider points on or above the current level
+            if (worldPoint.y < this._allPoints[i].y)
+            {
+                continue;
+            }
+
+            // Check if starting at this points gets closer
+            let currentPoint = this._allPoints[i];
+            let distance = worldPoint.distanceSq(currentPoint);
+
+            for (let j=0; j<this._explorationPoints; j++)
+            {
+                if (cloesestPointDistances[j] > distance)
+                {
+                    for (let k=this._explorationPoints-1; k>j; k--)
+                    {
+                        cloesestPointDistances[k] = cloesestPointDistances[k-1];
+                        closestPointIndexes[k] = closestPointIndexes[k-1];
+                    }
+                    cloesestPointDistances[j] = distance;
+                    closestPointIndexes[j] = i;
+                    break;
+                }
+            }
+        }
+
+        let bestPoints: Phaser.Math.Vector2[] = [];
+        let bestPointsDistance = 1000000;
+
+        for (let j=1; j<closestPointIndexes.length; j++)
+        {
+            let i = closestPointIndexes[j];
+            if (i == -1)
+            {
+                continue;
+            }
+
             // Cannot move upwards, so only consider points on or above the current level
             if (worldPoint.y < this._allPoints[i].y)
             {
