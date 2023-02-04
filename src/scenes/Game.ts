@@ -114,7 +114,7 @@ export default class World extends Phaser.Scene {
       }
       else if (this.lastGhost + 50 < time)
       {
-        this.roots?.ghostTo(worldPoint);
+        this.roots?.findAndDrawBestGhost(worldPoint);
         this.lastGhost = time;
       }
 
