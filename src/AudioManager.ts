@@ -5,7 +5,7 @@ const X0 = 0;
 const k = 1; //steepness
 
 const m = 0.005;
-const DEPTH_OFFSET = 100;
+const DEPTH_OFFSET = 400;
 
 export default class AudioManager {
     public _camera: Phaser.Cameras.Scene2D.Camera;
