@@ -88,6 +88,16 @@ export const GlucoseIcon: Sprite = {
     assetLocation: "assets/icons/glucose.png"
 }
 
+export const AbovegroundBGM: Asset = {
+    key: 'aboveground', 
+    assetLocation: 'assets/audio/aboveground-final.mp3'
+}
+
+export const UndergroundBGM: Asset = {
+    key: 'underground', 
+    assetLocation: 'assets/audio/underground-alt-lowpass3.mp3'
+}
+
 export const AssetLoader = {
     loadFont: (scene: Phaser.Scene, font: Font) =>
         scene.load.bitmapFont(
@@ -108,5 +118,7 @@ export const AssetLoader = {
         scene.load.image(
             s.key,
             s.assetLocation
-        )
+        ),
+    loadAudio: (scene: Phaser.Scene, audio: Asset) => 
+        scene.load.audio(audio.key, [audio.assetLocation])
 }
