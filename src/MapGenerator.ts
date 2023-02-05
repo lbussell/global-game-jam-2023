@@ -57,7 +57,7 @@ export default class MapGenerator
         {
             for (let c = 0; c < configuration[r].length; ++c)
             {
-                if (!this.IsOutOfBounds(new Phaser.Math.Vector2(gridPosition.y + r, gridPosition.x + c)))
+                if (!this.IsOutOfBounds(new Phaser.Math.Vector2(gridPosition.x + c, gridPosition.y + r)))
                 {
                     let resourceTile : ResourceTile | null = null;
 

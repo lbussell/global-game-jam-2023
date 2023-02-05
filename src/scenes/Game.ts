@@ -13,6 +13,7 @@ import {
   BranchSprite,
   LeavesSprite,
   RootSprite,
+  RootSprites,
   TestTiles,
   WaterTiles,
 } from '../Assets';
@@ -46,6 +47,7 @@ export default class World extends Phaser.Scene {
     AssetLoader.loadSprite(this, RootSprite);
     AssetLoader.loadSpriteSheet(this, TestTiles);
     AssetLoader.loadSpriteSheet(this, WaterTiles);
+    AssetLoader.loadSpriteSheet(this, RootSprites);
   }
 
   unload() {
@@ -53,6 +55,7 @@ export default class World extends Phaser.Scene {
   }
 
   create() {
+    this.gameManager = new GameManager();
     this.gameManager = new GameManager();
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
@@ -86,6 +89,8 @@ export default class World extends Phaser.Scene {
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
       // old underground tile-based root logic:
       // this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY));
+      // old underground tile-based root logic:
+      // this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY));
     });
 
     this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
@@ -107,6 +112,8 @@ export default class World extends Phaser.Scene {
 
       this.gameManager?.updateAttachedResources(delta);
 
+      this.gameManager?.updateAttachedResources(delta);
+
       if (this.input.manager.activePointer.isDown)
       {
         if (this.clicked + 300 < time )
@@ -115,7 +122,7 @@ export default class World extends Phaser.Scene {
           // LEGACY CONTROLLER:
           // this.underground?.click(worldPoint);
 
-          this.roots?.addPoint(worldPoint);
+          this.roots?.createGhost(worldPoint);
 
           this.clicked = time;
         }

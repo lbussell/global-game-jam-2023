@@ -1,3 +1,4 @@
+
 export enum TilemapLayer {
     Root = 'root',
     Resources = 'resources',
@@ -52,6 +53,13 @@ export const Potassium = (quantity: number): ResourceTile => {
     }
 }
 
+// export const Sunlight = (quantity: number): Resource => {
+//     return {
+//         tilemapIndex: 4,
+//         resourceQuantity: quantity,
+//         tilemapLayer: TilemapLayer.Resources
+//     }
+// }
 export const WaterConfigurations : number[][][] =
 [
     // basic 4x4

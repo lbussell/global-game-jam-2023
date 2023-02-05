@@ -30,6 +30,8 @@ export default class Underground {
 
     private _undergroundMapGenerator : MapGenerator;
 
+    private _undergroundMapGenerator : MapGenerator;
+
     constructor(scene: Phaser.Scene, camera: Phaser.Cameras.Scene2D.Camera, seed: number = 0) {
         this._scene = scene;
         this._camera = camera;
@@ -77,7 +79,20 @@ export default class Underground {
         //         if (Math.random() < 0.1) {
         //             result = Water(128);
         //         }
+        // this._undergroundGrid = [];
+        // for (let r = 0; r < Constants.MAP_HEIGHT; r += 1) {
+        //     this._undergroundGrid[r] = [];
+        //     for (let c = 0; c < Constants.MAP_WIDTH; c += 1) {
+        //         let result: TilemapObject | null = null;
+        //         if (Math.random() < 0.1) {
+        //             result = Water(128);
+        //         }
 
+        //         this._undergroundGrid[r][c] = result;
+        //     }
+        // }
+        // console.log(this._undergroundGrid);
+        this._undergroundGrid = this._undergroundMapGenerator.GenerateMap();
         //         this._undergroundGrid[r][c] = result;
         //     }
         // }
