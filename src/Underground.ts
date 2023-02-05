@@ -12,7 +12,7 @@ import {
     Root,
     Potassium,
     TilemapLayer,
-    Resource
+    ResourceTile
 } from './Resources'
 
 import { TestTiles } from './Assets';
@@ -60,12 +60,12 @@ export default class Underground {
         );
 
         // initialize map generator and generate grid
-        var generationData = new Map<Resource, ResourceGenerationData>();
-        generationData.set(Water(0), new ResourceGenerationData(0.05, 1, 5));
-        generationData.set(Potassium(0), new ResourceGenerationData(0.1, 3, 10));
+        var generationData = new Map<ResourceTile, ResourceGenerationData>();
+        generationData.set(Water(0), new ResourceGenerationData(0.05, 0.005, 1, 5));
+        generationData.set(Potassium(0), new ResourceGenerationData(0.1, 0.001, 3, 10));
         this._undergroundMapGenerator = new MapGenerator(scene, 
             new Phaser.Math.Vector2(Constants.MAP_WIDTH, Constants.MAP_HEIGHT),
-            generationData, Math.random());
+            generationData, Math.random(), 4);
 
         // this._undergroundGrid = [];
         // for (let r = 0; r < Constants.MAP_HEIGHT; r += 1) {

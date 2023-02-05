@@ -46,7 +46,7 @@ export const Water = (quantity: number): ResourceTile => {
 export const Potassium = (quantity: number): ResourceTile => {
     return {
         type: ResourceTileType.Potassium,
-        tilemapIndex: 3,
+        tilemapIndex: 5,
         ratePerSec: 1,
         resourceQuantity: quantity,
         tilemapLayer: TilemapLayer.Resources
