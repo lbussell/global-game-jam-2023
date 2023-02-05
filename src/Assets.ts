@@ -37,8 +37,8 @@ export const RootSprite: Sprite = {
 
 export const RootSprites: SpriteSheet = {
     key: "rootSheet",
-    assetLocation: "assets/rootsSprites.png",
-    numSprites: 8,
+    assetLocation: "assets/newRoots.png",
+    numSprites: 4,
     size: { h: 32, w: 32}
 }
 
