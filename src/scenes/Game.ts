@@ -47,7 +47,7 @@ export default class World extends Phaser.Scene {
   private audioManager?: AudioManager;
 
   constructor() {
-    super("GameScene");
+    super({ key: 'GameScene' });
     this.isLoaded = false;
     this.clicked = 0;
 

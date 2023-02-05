@@ -8,6 +8,8 @@ export const WINDOW_SIZE: Size = { h: 200 * TILE_SCALE, w: 267 * TILE_SCALE };
 export const MAP_HEIGHT: number = 10000;
 export const MAP_WIDTH: number = 34;
 
+export const GAME_TITLE: string = "Become Tree";
+
 export interface Size {
     h: number;
     w: number;

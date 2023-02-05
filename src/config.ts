@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import * as Constants from "./Constants"
 import World from './scenes/Game';
 import UI from './scenes/UI';
+import StartScene from './scenes/StartScreen'
 
 export default {
   type: Phaser.AUTO,
@@ -14,5 +15,5 @@ export default {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   pixelArt: true,
-  scene: [ World, UI ]
+  scene: [ UI, StartScene, World ]
 };

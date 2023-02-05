@@ -116,6 +116,11 @@ export const DiggingSFX: Asset = {
     assetLocation: 'assets/audio/digging_sound.ogg'
 }
 
+export const StartBackground: Asset = {
+    key: 'startbackground',
+    assetLocation: 'assets/startscreen.png'
+}
+
 export const AssetLoader = {
     loadFont: (scene: Phaser.Scene, font: Font) =>
         scene.load.bitmapFont(
