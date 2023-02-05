@@ -1,12 +1,6 @@
 import Phaser, { Game, Input } from "phaser";
 import * as Constants from '../Constants';
 import { Position } from '../Constants';
-import Underground from '../Underground';
-import Roots from "../Roots";
-import InputManager from "../InputManager";
-import CameraManager from "../CameraManager";
-import GameManager from "../GameManager";
-import ProceduralTree from "../ProceduralTree";
 
 import {
   AssetLoader,
@@ -17,7 +11,17 @@ import {
   RootSprites,
   TestTiles,
   WaterTiles,
+  AbovegroundBGM,
+  UndergroundBGM
 } from '../Assets';
+
+import Underground from '../Underground';
+import Roots from "../Roots";
+import InputManager from "../InputManager";
+import CameraManager from "../CameraManager";
+import GameManager from "../GameManager";
+import ProceduralTree from "../ProceduralTree";
+import AudioManager from "../AudioManager";
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;
@@ -32,6 +36,8 @@ export default class World extends Phaser.Scene {
   private lastGhost: number = 0;
 
   private timeText?: Phaser.GameObjects.BitmapText;
+
+  private audioManager?: AudioManager;
 
   constructor() {
     super("GameScene");
@@ -50,6 +56,9 @@ export default class World extends Phaser.Scene {
     AssetLoader.loadSpriteSheet(this, WaterTiles);
     AssetLoader.loadSpriteSheet(this, RootSprites);
     AssetLoader.loadSpriteSheet(this, GroundTiles);
+
+    AssetLoader.loadAudio(this, AbovegroundBGM);
+    AssetLoader.loadAudio(this, UndergroundBGM);
   }
 
   unload() {
@@ -62,6 +71,8 @@ export default class World extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
+    this.audioManager = new AudioManager(this, ['aboveground', 'underground']);
+    this.audioManager.playLoops();
 
     this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos())
 
@@ -121,6 +132,10 @@ export default class World extends Phaser.Scene {
 
       // Draw the grid
       this.underground?.drawGrid();
+
+      //manage audio switching between above/belowground
+      this.audioManager?.interpolateVolume();
+
     }
   }
 }
