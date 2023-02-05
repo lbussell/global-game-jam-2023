@@ -13,7 +13,8 @@ import {
   WaterTiles,
   PotassiumTiles,
   AbovegroundBGM,
-  UndergroundBGM
+  UndergroundBGM,
+  DiggingSFX
 } from '../Assets';
 
 import Underground from '../Underground';
@@ -63,6 +64,7 @@ export default class World extends Phaser.Scene {
 
     AssetLoader.loadAudio(this, AbovegroundBGM);
     AssetLoader.loadAudio(this, UndergroundBGM);
+    AssetLoader.loadAudio(this, DiggingSFX);
   }
 
   unload() {
@@ -75,7 +77,7 @@ export default class World extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
-    this.audioManager = new AudioManager(this, ['aboveground', 'underground']);
+    this.audioManager = new AudioManager(this, ['aboveground', 'underground'], ['digSFX']);
     this.audioManager.playLoops();
     this.input.keyboard.on('keydown-M', () => this.audioManager?.toggleMuteAll());
 
