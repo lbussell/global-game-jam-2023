@@ -32,6 +32,14 @@ export const WaterTiles: SpriteSheet =
     size: {h: TILE_SIZE, w: TILE_SIZE}
 }
 
+export const GroundTiles: SpriteSheet = 
+{
+    key: "groundtiles",
+    assetLocation: "assets/ground.png",
+    numSprites: 15,
+    size: {h: TILE_SIZE, w: TILE_SIZE}
+}
+
 export const BranchSprite: Sprite = {
     key: "branch",
     assetLocation: "assets/trunkbranch.png"

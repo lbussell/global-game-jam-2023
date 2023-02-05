@@ -16,7 +16,12 @@ import {
     ResourceTileType
 } from './Resources'
 
-import { TestTiles, WaterTiles } from './Assets';
+import {
+    TestTiles,
+    WaterTiles,
+    GroundTiles
+} from './Assets';
+
 import { TilemapObject } from "./Resources";
 import  MapGenerator, { ResourceGenerationData} from "./MapGenerator";
 
@@ -27,8 +32,6 @@ export default class Underground {
     private _seed: number;
 
     private _undergroundGrid: (TilemapObject | null)[][];
-
-    private _undergroundMapGenerator : MapGenerator;
 
     private _undergroundMapGenerator : MapGenerator;
 
@@ -44,15 +47,13 @@ export default class Underground {
             height: Constants.MAP_HEIGHT
         });
 
-        const tiles = this._tilemap.addTilesetImage(TestTiles.key);
+        const tiles = this._tilemap.addTilesetImage(GroundTiles.key);
         const waterTiles = this._tilemap.addTilesetImage(WaterTiles.key);
 
         const layerDirt = this._tilemap.createBlankLayer('dirt', tiles);
-        const layerRoot = this._tilemap.createBlankLayer('root', tiles);
         const layerResources = this._tilemap.createBlankLayer('resources', waterTiles);
 
         layerDirt.setScale(Constants.TILE_SCALE);
-        layerRoot.setScale(Constants.TILE_SCALE);
         layerResources.setScale(Constants.TILE_SCALE);
 
         layerDirt.fill(
@@ -63,56 +64,32 @@ export default class Underground {
             Constants.MAP_HEIGHT
         );
 
+        layerDirt.randomize(
+            /* tileX */ 0,
+            /* tileY */ 0,
+            Constants.MAP_WIDTH,
+            1,
+            [1,2,3]
+        );
+
+        layerDirt.randomize(
+            /* tileX */ 0,
+            /* tileY */ 1,
+            Constants.MAP_WIDTH,
+            1,
+            [9,10,11]
+        );
+
         // initialize map generator and generate grid
         var generationData = new Map<ResourceTileType, ResourceGenerationData>();
         generationData.set(ResourceTileType.Water, new ResourceGenerationData(0.05, 0.005, 1, 5));
         generationData.set(ResourceTileType.Potassium, new ResourceGenerationData(0.1, 0.001, 3, 10));
+
         this._undergroundMapGenerator = new MapGenerator(scene, 
             new Phaser.Math.Vector2(Constants.MAP_WIDTH, Constants.MAP_HEIGHT),
             generationData, Math.random(), 4);
 
-        // this._undergroundGrid = [];
-        // for (let r = 0; r < Constants.MAP_HEIGHT; r += 1) {
-        //     this._undergroundGrid[r] = [];
-        //     for (let c = 0; c < Constants.MAP_WIDTH; c += 1) {
-        //         let result: TilemapObject | null = null;
-        //         if (Math.random() < 0.1) {
-        //             result = Water(128);
-        //         }
-        // this._undergroundGrid = [];
-        // for (let r = 0; r < Constants.MAP_HEIGHT; r += 1) {
-        //     this._undergroundGrid[r] = [];
-        //     for (let c = 0; c < Constants.MAP_WIDTH; c += 1) {
-        //         let result: TilemapObject | null = null;
-        //         if (Math.random() < 0.1) {
-        //             result = Water(128);
-        //         }
-
-        //         this._undergroundGrid[r][c] = result;
-        //     }
-        // }
-        // console.log(this._undergroundGrid);
         this._undergroundGrid = this._undergroundMapGenerator.GenerateMap();
-        //         this._undergroundGrid[r][c] = result;
-        //     }
-        // }
-        // console.log(this._undergroundGrid);
-        this._undergroundGrid = this._undergroundMapGenerator.GenerateMap();
-
-        const rootOrigin: Position = { x: Math.floor(Constants.MAP_WIDTH / 2), y: 0 };
-        layerRoot.putTileAt(Root.tilemapIndex, rootOrigin.x, rootOrigin.y, true);
-        this._undergroundGrid[rootOrigin.y][rootOrigin.x] = Root;
-        this.placeRoot(rootOrigin);
-        // this._tilemap.on
-    }
-
-    // OUTDATED logic to add roots to GRID
-    click(worldPoint: Phaser.Math.Vector2): boolean {
-        const pos: Position = {
-            x: this._tilemap.worldToTileX(worldPoint.x, undefined, this._camera),
-            y: this._tilemap.worldToTileY(worldPoint.y, undefined, this._camera)
-        };
-        return this.placeRoot(pos);
     }
 
     drawGrid() {
@@ -145,36 +122,4 @@ export default class Underground {
 
         return this._undergroundGrid[tilePosition.x][tilePosition.y];
     }
-
-    // OUTDATED logic to add roots to GRID
-    placeRoot(pos: Position): boolean {
-        // Verify adjacent root
-        let isAdjacent: boolean = false;
-
-        if (!this.isOutOfBounds({ y: pos.y, x: pos.x + 1 }) && this._undergroundGrid[pos.y][pos.x + 1] == Root) {
-            isAdjacent = true;
-        }
-        if (!this.isOutOfBounds({ y: pos.y, x: pos.x - 1 }) && this._undergroundGrid[pos.y][pos.x - 1] == Root) {
-            isAdjacent = true;
-        }
-        if (!this.isOutOfBounds({ y: pos.y + 1, x: pos.x }) && this._undergroundGrid[pos.y + 1][pos.x] == Root) {
-            isAdjacent = true;
-        }
-        if (!this.isOutOfBounds({ y: pos.y - 1, x: pos.x }) && this._undergroundGrid[pos.y - 1][pos.x] == Root) {
-            isAdjacent = true;
-        }
-
-        if (isAdjacent) {
-            if (this._undergroundGrid[pos.y][pos.x] == null) {
-                this._undergroundGrid[pos.y][pos.x] = Root;
-            } else {
-                return false;
-            }
-        }
-
-        // Return true if the action was successful
-        return isAdjacent;
-    }
-
-
 }

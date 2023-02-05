@@ -6,11 +6,12 @@ import Roots from "../Roots";
 import InputManager from "../InputManager";
 import CameraManager from "../CameraManager";
 import GameManager from "../GameManager";
-import Tree from "../Tree";
+import ProceduralTree from "../ProceduralTree";
 
 import {
   AssetLoader,
   BranchSprite,
+  GroundTiles,
   LeavesSprite,
   RootSprite,
   RootSprites,
@@ -26,7 +27,7 @@ export default class World extends Phaser.Scene {
   private inputManager?: InputManager;
   private underground?: Underground;
   private roots?: Roots;
-  private tree?: Tree;
+  private tree?: ProceduralTree;
   private clicked: integer;
   private lastGhost: number = 0;
 
@@ -48,6 +49,7 @@ export default class World extends Phaser.Scene {
     AssetLoader.loadSpriteSheet(this, TestTiles);
     AssetLoader.loadSpriteSheet(this, WaterTiles);
     AssetLoader.loadSpriteSheet(this, RootSprites);
+    AssetLoader.loadSpriteSheet(this, GroundTiles);
   }
 
   unload() {
@@ -60,13 +62,6 @@ export default class World extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
-
-    // test text.. later, add this to its own UI scene that sits on top of this scene
-    // this.addBitmapTextByLine(0, 0, 'fingus');
-    // this.addBitmapTextByLine(0, 1, 'bingus');
-    // this.timeText = this.addBitmapText(0, 0, this.formatTimeString(0));
-
-    // this.cameras.main.
 
     this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos())
 
@@ -87,16 +82,12 @@ export default class World extends Phaser.Scene {
       })
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      // old underground tile-based root logic:
-      // this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY));
-      // old underground tile-based root logic:
-      // this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY));
+      // click stuff here
     });
 
     this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
 
-    this.tree = new Tree(this, Constants.WINDOW_SIZE.w/2, Constants.WINDOW_SIZE.h/2);
-    // this.tree.
+    this.tree = new ProceduralTree(this, Constants.WINDOW_SIZE.w/2, Constants.WINDOW_SIZE.h/2);
 
     // Don't add anything to this function below here
     this.isLoaded = true;
@@ -118,12 +109,7 @@ export default class World extends Phaser.Scene {
       {
         if (this.clicked + 300 < time )
         {
-
-          // LEGACY CONTROLLER:
-          // this.underground?.click(worldPoint);
-
           this.roots?.createGhost(worldPoint);
-
           this.clicked = time;
         }
       }

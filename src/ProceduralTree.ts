@@ -1,15 +1,15 @@
 import Phaser from "phaser";
-import { WINDOW_SIZE } from "./Constants";
+import { TILE_SCALE, WINDOW_SIZE } from "./Constants";
 import { BranchSprite, LeavesSprite } from "./Assets";
 
 type degrees = number;
 type pixels = number;
 
-export default class Tree {
+export default class ProceduralTree {
 
     private _graphics: Phaser.GameObjects.Graphics;
     private _numTreelevels: number = 8;
-    private _segmentHeight: number = 8;
+    private _segmentHeight: number = 8 * TILE_SCALE;
     private _segmentFalloff: number = 0.90;
     private _leafScale: number = 0.8;
 
@@ -82,7 +82,6 @@ export default class Tree {
         dir_rad: number,
         level: number
     ) {
-        const line = new Phaser.Geom.Line()
         // const group = this._scene.add.group({ key: BranchSprite.key, frameQuantity: 300 })
         // const dist = Math.sqrt(
         //     Math.pow(end[0]-start[0], 2)
@@ -90,7 +89,7 @@ export default class Tree {
         if (level > 0) {
             this._scene.add.sprite(start[0], start[1], BranchSprite.key)
                 .setOrigin(0.5, 0)
-                .setScale(-(level / this._numTreelevels * 0.5), len / 8)
+                .setScale(-(level / this._numTreelevels * 0.5) * TILE_SCALE, len / 8)
                 .setRotation(dir_rad);
         } else {
             const midpoint = [
@@ -99,7 +98,7 @@ export default class Tree {
             ]
             this._scene.add.sprite(midpoint[0], midpoint[1], LeavesSprite.key)
                 .setOrigin(0.5, 0.5)
-                .setScale(this._leafScale * this.randomizeLen())
+                .setScale(this._leafScale * TILE_SCALE * this.randomizeLen())
         }
 
         // Phaser.Actions.PlaceOnLine(group.getChildren(), line);

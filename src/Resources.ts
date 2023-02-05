@@ -17,7 +17,7 @@ export interface ResourceTile extends TilemapObject {
 }
 
 export const Dirt: TilemapObject = {
-    tilemapIndex: 4,
+    tilemapIndex: 17,
     tilemapLayer: TilemapLayer.Dirt
 };
 
