@@ -90,8 +90,6 @@ export default class GameManager {
             }
         }
 
-        console.log("Added resource!")
-
         this.attachedResources.push(tile);
     }
 }
