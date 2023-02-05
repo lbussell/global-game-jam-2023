@@ -32,6 +32,14 @@ export const WaterTiles: SpriteSheet =
     size: {h: TILE_SIZE, w: TILE_SIZE}
 }
 
+export const PotassiumTiles: SpriteSheet =
+{
+    key: "potassiumtiles",
+    assetLocation: "assets/potassiumtiles.png",
+    numSprites: 256,
+    size: {h: TILE_SIZE, w: TILE_SIZE}
+}
+
 export const GroundTiles: SpriteSheet = 
 {
     key: "groundtiles",
@@ -88,14 +96,24 @@ export const GlucoseIcon: Sprite = {
     assetLocation: "assets/icons/glucose.png"
 }
 
+export const ParticleSprite: Sprite = {
+    key: "particle",
+    assetLocation: "assets/particle.png"
+}
+
 export const AbovegroundBGM: Asset = {
     key: 'aboveground', 
-    assetLocation: 'assets/audio/aboveground-final.mp3'
+    assetLocation: 'assets/audio/aboveground-final2.ogg'
 }
 
 export const UndergroundBGM: Asset = {
     key: 'underground', 
-    assetLocation: 'assets/audio/underground-alt-lowpass3.mp3'
+    assetLocation: 'assets/audio/underground-alt-lowpass3.ogg'
+}
+
+export const DiggingSFX: Asset = {
+    key: 'digSFX', 
+    assetLocation: 'assets/audio/digging_sound.ogg'
 }
 
 export const StartBackground: Asset = {

@@ -1,7 +1,8 @@
 
 export enum TilemapLayer {
     Root = 'root',
-    Resources = 'resources',
+    Water = 'water',
+    Potassium = 'potassium',
     Dirt = 'dirt'
 }
 
@@ -11,6 +12,7 @@ export interface TilemapObject {
 }
 
 export interface ResourceTile extends TilemapObject {
+    id: number,
     type: ResourceTileType,
     resourceQuantity: number,
     ratePerSec: number
@@ -33,23 +35,25 @@ export enum ResourceTileType {
 
 // 2 = red
 
-export const Water = (quantity: number, tileIndex : number): ResourceTile => {
+export const Water = (id: number, quantity: number, tileIndex : number): ResourceTile => {
     return {
+        id: id,
         type: ResourceTileType.Water,
         tilemapIndex: tileIndex,
         resourceQuantity: quantity,
         ratePerSec: 1,
-        tilemapLayer: TilemapLayer.Resources
+        tilemapLayer: TilemapLayer.Water
     }
 }
 
-export const Potassium = (quantity: number): ResourceTile => {
+export const Potassium = (id: number, quantity: number, tileIndex : number): ResourceTile => {
     return {
+        id: id,
         type: ResourceTileType.Potassium,
-        tilemapIndex: 5,
+        tilemapIndex: tileIndex,
         ratePerSec: 1,
         resourceQuantity: quantity,
-        tilemapLayer: TilemapLayer.Resources
+        tilemapLayer: TilemapLayer.Potassium
     }
 }
 
@@ -60,9 +64,19 @@ export const Potassium = (quantity: number): ResourceTile => {
 //         tilemapLayer: TilemapLayer.Resources
 //     }
 // }
+
+// List of different tile patterns that water can spawn in
 export const WaterConfigurations : number[][][] =
 [
     // basic 4x4
     [[0, 3],
     [12, 15]]
+];
+
+export const PotassiumConfigurations : number[][][] =
+[
+    // basic 4x4
+    [[82, 83, 84],
+     [98, 99, 100],
+     [114, 115, 116]]
 ];

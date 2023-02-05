@@ -19,6 +19,7 @@ import {
 import {
     TestTiles,
     WaterTiles,
+    PotassiumTiles,
     GroundTiles
 } from './Assets';
 
@@ -31,7 +32,7 @@ export default class Underground {
     private _camera: Phaser.Cameras.Scene2D.Camera;
     private _seed: number;
 
-    private _undergroundGrid: (TilemapObject | null)[][];
+    private _undergroundGrid: (ResourceTile | null)[][];
 
     private _undergroundMapGenerator : MapGenerator;
 
@@ -49,12 +50,15 @@ export default class Underground {
 
         const tiles = this._tilemap.addTilesetImage(GroundTiles.key);
         const waterTiles = this._tilemap.addTilesetImage(WaterTiles.key);
+        const potassiumTiles = this._tilemap.addTilesetImage(PotassiumTiles.key);
 
         const layerDirt = this._tilemap.createBlankLayer('dirt', tiles);
-        const layerResources = this._tilemap.createBlankLayer('resources', waterTiles);
+        const layerWater = this._tilemap.createBlankLayer('water', waterTiles);
+        const layerPotassium = this._tilemap.createBlankLayer("potassium", potassiumTiles)
 
         layerDirt.setScale(Constants.TILE_SCALE);
-        layerResources.setScale(Constants.TILE_SCALE);
+        layerWater.setScale(Constants.TILE_SCALE);
+        layerPotassium.setScale(Constants.TILE_SCALE);
 
         layerDirt.fill(
             Dirt.tilemapIndex,
@@ -92,8 +96,25 @@ export default class Underground {
         this._undergroundGrid = this._undergroundMapGenerator.GenerateMap();
     }
 
-    drawGrid() {
-        for (let r = 0; r < Constants.MAP_HEIGHT; r += 1) {
+    drawGrid(cameraPosition : Phaser.Math.Vector2 | undefined) 
+    {
+        if (!cameraPosition)
+            return;
+        let tilePositionTop = this._tilemap.worldToTileY(cameraPosition.y - (Constants.WINDOW_SIZE.h / 2), undefined, this._camera, undefined);
+        let tilePositionBottom = this._tilemap.worldToTileY(cameraPosition.y + (Constants.WINDOW_SIZE.h / 2), undefined, this._camera, undefined);
+        if (tilePositionTop < 0)
+            tilePositionTop = 0;
+        
+        if (tilePositionTop >= Constants.MAP_HEIGHT)
+            return;
+
+        if (tilePositionBottom < 0)
+            tilePositionBottom = 0;
+
+        if (tilePositionBottom >= Constants.MAP_HEIGHT)
+            tilePositionBottom = Constants.MAP_HEIGHT
+
+        for (let r = tilePositionTop; r < tilePositionBottom; r += 1) {
             for (let c = 0; c < Constants.MAP_WIDTH; c += 1) {
                 let tileObject = this._undergroundGrid[r][c];
 
@@ -112,7 +133,7 @@ export default class Underground {
         return false;
     }
 
-    getTilemapObjectAtWorldPos(position: Phaser.Math.Vector2): TilemapObject | null {
+    getResourceTileAtWorldPos(position: Phaser.Math.Vector2): ResourceTile | null {
         let tilePosition = this._tilemap.worldToTileXY(position.x, position.y, undefined, undefined, this._camera);
 
         if (this.isOutOfBounds(tilePosition))
@@ -120,6 +141,6 @@ export default class Underground {
             return null;
         }
 
-        return this._undergroundGrid[tilePosition.x][tilePosition.y];
+        return this._undergroundGrid[tilePosition.y][tilePosition.x];
     }
 }
