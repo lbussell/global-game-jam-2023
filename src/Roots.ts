@@ -6,12 +6,14 @@ import {
   Position,
 } from './Constants';
 import { RootSprites } from './Assets';
+import GameManager from "./GameManager";
 
 export default class Root {
     private _lastPoints: Phaser.Math.Vector2[];
     private _allPoints: Phaser.Math.Vector2[];
     private _scene: Phaser.Scene;
     private _underground: Underground;
+    private _gameManager: GameManager;
 
     private _allRopes: Phaser.GameObjects.Rope[];
     private _ghostRope: Phaser.GameObjects.Rope | undefined = undefined;
@@ -30,9 +32,10 @@ export default class Root {
     private _leftVector = new Phaser.Math.Vector2(-1, 0);
     private _rightVector = new Phaser.Math.Vector2(1, 0);
 
-    constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground) {
+    constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager) {
         this._scene = scene;
         this._underground = underground;
+        this._gameManager = gameManager;
 
         // Create inital Roots (all ropes will contain this number of points)
         this._lastPoints = [];
@@ -59,7 +62,6 @@ export default class Root {
 
     // Returns closest point of the root to the given point, and its direction vector
     // TODO: Favors existing root ends
-    // TODO: Returns undefinied direction if the closest point is a new branch
     getClosestPoint(worldPoint: Phaser.Math.Vector2): [Phaser.Math.Vector2, Phaser.Math.Vector2 | undefined] {
         if (this._allPoints.length < 1)
         {
@@ -104,6 +106,11 @@ export default class Root {
             // Check if starting at this points gets closer
             let currentPoint = this._allPoints[i];
             let distance = worldPoint.distanceSq(currentPoint);
+
+            if (currentPoint.y - 30 > worldPoint.y)
+            {
+                continue;
+            }
 
             for (let j=0; j<this._explorationPoints; j++)
             {
@@ -267,7 +274,7 @@ export default class Root {
             }
 
             // Add point and update direction
-            let newPoint = points[points.length - 1].clone().add(direction);
+            let newPoint: Phaser.Math.Vector2 = points[points.length - 1].clone().add(direction);
 
             // Do not add new point if we are getting further from the desired point
             if (newPoint.distanceSq(worldPoint) > lastDistance)
@@ -322,6 +329,17 @@ export default class Root {
             if (tilePoints.length < 2)
             {
                 break;
+            }
+
+            for (let i=0; i<tilePoints.length; i++)
+            {
+                let tile = this._underground.getResourceTileAtWorldPos(tilePoints[i]);
+
+                if (tile != null)
+                {
+                    console.log("Found resource!")
+                    this._gameManager.attachTo(tile);
+                }
             }
 
             this._allRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false));
