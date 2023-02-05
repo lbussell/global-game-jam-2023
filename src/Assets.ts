@@ -24,6 +24,32 @@ export const TestTiles: SpriteSheet = {
     size: { h: TILE_SIZE, w: TILE_SIZE }
 }
 
+export const WaterTiles: SpriteSheet = 
+{
+    key: "watertiles",
+    assetLocation: "assets/watertiles.png",
+    numSprites: 16,
+    size: {h: TILE_SIZE, w: TILE_SIZE}
+}
+
+export const GroundTiles: SpriteSheet = 
+{
+    key: "groundtiles",
+    assetLocation: "assets/ground.png",
+    numSprites: 15,
+    size: {h: TILE_SIZE, w: TILE_SIZE}
+}
+
+export const BranchSprite: Sprite = {
+    key: "branch",
+    assetLocation: "assets/trunkbranch.png"
+}
+
+export const LeavesSprite: Sprite = {
+    key: "leaves",
+    assetLocation: "assets/leaf.png"
+}
+
 export const ArcadeFont: Font = {
     key: "arcadeFont",
     assetLocation: "assets/fonts/arcade.png",

@@ -20,7 +20,7 @@ export default class Root {
     private _ghostColor = Phaser.Display.Color.GetColor32(75, 180, 180, 150);
     private _currentFrames: number[] = [];
 
-    private _growthDistance = 32;
+    private _growthDistance = 32 / 3 * Constants.TILE_SCALE;
     private _maxGhosts = 100;
     private _maxAngleRadians = 0.06;
     private _upAngleRestriction = Math.PI / 3;

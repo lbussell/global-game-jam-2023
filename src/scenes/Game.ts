@@ -1,24 +1,23 @@
 import Phaser, { Game, Input } from "phaser";
 import * as Constants from '../Constants';
-import {
-  Size,
-  Position,
-} from '../Constants';
-import {
-  AssetLoader,
-  Font,
-  Asset,
-  SpriteSheet,
-  Sprite,
-  TestTiles,
-  RootSprites,
-  ArcadeFont
-} from '../Assets';
+import { Position } from '../Constants';
 import Underground from '../Underground';
 import Roots from "../Roots";
 import InputManager from "../InputManager";
 import CameraManager from "../CameraManager";
 import GameManager from "../GameManager";
+import ProceduralTree from "../ProceduralTree";
+
+import {
+  AssetLoader,
+  BranchSprite,
+  GroundTiles,
+  LeavesSprite,
+  RootSprite,
+  RootSprites,
+  TestTiles,
+  WaterTiles,
+} from '../Assets';
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;
@@ -27,7 +26,8 @@ export default class World extends Phaser.Scene {
   private cameraManager?: CameraManager;
   private inputManager?: InputManager;
   private underground?: Underground;
-  private roots?: Roots
+  private roots?: Roots;
+  private tree?: ProceduralTree;
   private clicked: integer;
   private lastGhost: number = 0;
 
@@ -43,8 +43,13 @@ export default class World extends Phaser.Scene {
   }
 
   preload() {
+    AssetLoader.loadSprite(this, BranchSprite)
+    AssetLoader.loadSprite(this, LeavesSprite)
+    AssetLoader.loadSprite(this, RootSprite);
     AssetLoader.loadSpriteSheet(this, TestTiles);
+    AssetLoader.loadSpriteSheet(this, WaterTiles);
     AssetLoader.loadSpriteSheet(this, RootSprites);
+    AssetLoader.loadSpriteSheet(this, GroundTiles);
   }
 
   unload() {
@@ -53,16 +58,10 @@ export default class World extends Phaser.Scene {
 
   create() {
     this.gameManager = new GameManager();
+    this.gameManager = new GameManager();
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
-
-    // test text.. later, add this to its own UI scene that sits on top of this scene
-    // this.addBitmapTextByLine(0, 0, 'fingus');
-    // this.addBitmapTextByLine(0, 1, 'bingus');
-    // this.timeText = this.addBitmapText(0, 0, this.formatTimeString(0));
-
-    // this.cameras.main.
 
     this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos())
 
@@ -74,7 +73,6 @@ export default class World extends Phaser.Scene {
         deltaY: number,
         event: Phaser.Types.Input.EventData
       ) => {
-        console.log(deltaY)
         if (deltaY > 0) {
           this.cameraManager?.MoveCameraUp();
         }
@@ -84,11 +82,12 @@ export default class World extends Phaser.Scene {
       })
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      // old underground tile-based root logic:
-      // this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY));
+      // click stuff here
     });
 
     this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
+
+    this.tree = new ProceduralTree(this, Constants.WINDOW_SIZE.w/2, Constants.WINDOW_SIZE.h/2);
 
     // Don't add anything to this function below here
     this.isLoaded = true;
@@ -104,16 +103,13 @@ export default class World extends Phaser.Scene {
 
       this.gameManager?.updateAttachedResources(delta);
 
+      this.gameManager?.updateAttachedResources(delta);
+
       if (this.input.manager.activePointer.isDown)
       {
         if (this.clicked + 300 < time )
         {
-
-          // LEGACY CONTROLLER:
-          // this.underground?.click(worldPoint);
-
           this.roots?.createGhost(worldPoint);
-
           this.clicked = time;
         }
       }
