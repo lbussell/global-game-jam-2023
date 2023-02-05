@@ -8,7 +8,7 @@ import {
 import { RootSprites } from './Assets';
 import GameManager from "./GameManager";
 import ParticleManaager from "./ParticleManager";
-import { RootType, NormalRoot, GlassRoot } from "./RootTypes";
+import { RootType, NormalRoot, GlassRoot, RootTypes } from "./RootTypes";
 
 export default class Root {
     private _lastPoints: Phaser.Math.Vector2[];
@@ -336,7 +336,7 @@ export default class Root {
 
                 if (tile != null)
                 {
-                    if (this._gameManager.attachTo(tile)) {
+                    if (this._gameManager.attachTo(tile, type)) {
                         this.particleManager.explode(tilePoints[i].x, tilePoints[i].y);
                     }
                 }
@@ -350,6 +350,11 @@ export default class Root {
         for (let i=0; i<this._maxGhosts; i++)
         {
             this._currentFrames.push(Phaser.Math.Between(0, 7));
+        }
+
+        if (type.rootType == RootTypes.Soil)
+        {
+            this._gameManager.resourceAmounts.potassiumRate += 1;
         }
 
         // Subtract cost
