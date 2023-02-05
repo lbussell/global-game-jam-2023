@@ -111,6 +111,11 @@ export const UndergroundBGM: Asset = {
     assetLocation: 'assets/audio/underground-alt-lowpass3.ogg'
 }
 
+export const DiggingSFX: Asset = {
+    key: 'digSFX', 
+    assetLocation: 'assets/audio/digging_sound.ogg'
+}
+
 export const AssetLoader = {
     loadFont: (scene: Phaser.Scene, font: Font) =>
         scene.load.bitmapFont(
