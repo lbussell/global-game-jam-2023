@@ -32,7 +32,7 @@ export default class Underground {
     private _camera: Phaser.Cameras.Scene2D.Camera;
     private _seed: number;
 
-    private _undergroundGrid: (TilemapObject | null)[][];
+    private _undergroundGrid: (ResourceTile | null)[][];
 
     private _undergroundMapGenerator : MapGenerator;
 
@@ -116,7 +116,7 @@ export default class Underground {
         return false;
     }
 
-    getTilemapObjectAtWorldPos(position: Phaser.Math.Vector2): TilemapObject | null {
+    getResourceTileAtWorldPos(position: Phaser.Math.Vector2): ResourceTile | null {
         let tilePosition = this._tilemap.worldToTileXY(position.x, position.y, undefined, undefined, this._camera);
 
         if (this.isOutOfBounds(tilePosition))
@@ -124,6 +124,6 @@ export default class Underground {
             return null;
         }
 
-        return this._undergroundGrid[tilePosition.x][tilePosition.y];
+        return this._undergroundGrid[tilePosition.y][tilePosition.x];
     }
 }

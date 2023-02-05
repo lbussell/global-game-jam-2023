@@ -27,7 +27,8 @@ export class ResourceGenerationData
 export default class MapGenerator
 {
     private _noiseGenerator : Perlin; 
-    private _grid : (TilemapObject | null)[][];
+    private _grid : (ResourceTile | null)[][];
+    private _nextId: number = 0;
 
     constructor(
         private _scene : Phaser.Scene,
@@ -65,11 +66,11 @@ export default class MapGenerator
                     {
                         case ResourceTileType.Water:
                         {
-                            resourceTile = Water(resourceAmount, configuration[r][c]);
+                            resourceTile = Water(this._nextId++, resourceAmount, configuration[r][c]);
                             break;
                         }
                         case ResourceTileType.Potassium:
-                            resourceTile = Potassium(resourceAmount, configuration[r][c]);
+                            resourceTile = Potassium(this._nextId++, resourceAmount, configuration[r][c]);
                             break;
                     }
 

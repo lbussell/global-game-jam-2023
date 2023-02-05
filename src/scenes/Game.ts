@@ -98,7 +98,7 @@ export default class World extends Phaser.Scene {
       // click stuff here
     });
 
-    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
+    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground, this.gameManager);
 
     this.tree = new ProceduralTree(this, Constants.WINDOW_SIZE.w/2, Constants.WINDOW_SIZE.h/2);
 
@@ -124,6 +124,11 @@ export default class World extends Phaser.Scene {
         {
           this.roots?.createGhost(worldPoint);
           this.clicked = time;
+        }
+        else if (this.lastGhost + 50 < time)
+        {
+          this.roots?.findAndDrawBestGhost(worldPoint);
+          this.lastGhost = time;
         }
       }
       else if (this.lastGhost + 50 < time)
