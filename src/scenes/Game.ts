@@ -11,6 +11,7 @@ import {
   RootSprites,
   TestTiles,
   WaterTiles,
+  PotassiumTiles,
   AbovegroundBGM,
   UndergroundBGM
 } from '../Assets';
@@ -54,6 +55,7 @@ export default class World extends Phaser.Scene {
     AssetLoader.loadSprite(this, RootSprite);
     AssetLoader.loadSpriteSheet(this, TestTiles);
     AssetLoader.loadSpriteSheet(this, WaterTiles);
+    AssetLoader.loadSpriteSheet(this, PotassiumTiles);
     AssetLoader.loadSpriteSheet(this, RootSprites);
     AssetLoader.loadSpriteSheet(this, GroundTiles);
 
