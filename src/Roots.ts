@@ -188,7 +188,7 @@ export default class Root {
 
             for (let i=0; i<this._growthDistance; i++)
             {
-                if (i >= points.length)
+                if (idx >= points.length)
                 {
                     break;
                 }
@@ -196,12 +196,9 @@ export default class Root {
                 tilePoints.push(points[idx++]);
             }
 
-            if (idx + this._growthDistance >= points.length)
+            if (tilePoints.length < 2)
             {
-                while(idx < points.length)
-                {
-                    tilePoints.push(points[idx++]);
-                }
+                break;
             }
 
             // Set colors
@@ -314,7 +311,7 @@ export default class Root {
 
             for (let i=0; i<this._growthDistance; i++)
             {
-                if (i >= this._lastPoints.length)
+                if (idx >= this._lastPoints.length)
                 {
                     break;
                 }
@@ -322,12 +319,9 @@ export default class Root {
                 tilePoints.push(this._lastPoints[idx++]);
             }
 
-            if (idx + this._growthDistance >= this._lastPoints.length)
+            if (tilePoints.length < 2)
             {
-                while(idx < this._lastPoints.length)
-                {
-                    tilePoints.push(this._lastPoints[idx++]);
-                }
+                break;
             }
 
             this._allRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false));
