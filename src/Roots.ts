@@ -9,6 +9,7 @@ import { RootSprites } from './Assets';
 import GameManager from "./GameManager";
 import ParticleManaager from "./ParticleManager";
 import { RootType, NormalRoot, GlassRoot } from "./RootTypes";
+import AudioManager from "./AudioManager";
 
 export default class Root {
     private _lastPoints: Phaser.Math.Vector2[];
@@ -35,7 +36,7 @@ export default class Root {
     private _leftVector = new Phaser.Math.Vector2(-1, 0);
     private _rightVector = new Phaser.Math.Vector2(1, 0);
 
-    constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager, private particleManager: ParticleManaager) {
+    constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager, private particleManager: ParticleManaager, private audioManager: AudioManager) {
         this._scene = scene;
         this._underground = underground;
         this._gameManager = gameManager;
@@ -336,10 +337,19 @@ export default class Root {
 
                 if (tile != null)
                 {
+                    console.log(tile);
                     if (this._gameManager.attachTo(tile)) {
                         this.particleManager.explode(tilePoints[i].x, tilePoints[i].y);
+                        if(tile.type === 'potassium'){
+                            this.audioManager.playSFX('kSFX');
+                        }
+                        else if (tile.type === 'water'){
+                            this.audioManager.playSFX('h2oSFX');
+                        }
                     }
+                    
                 }
+                this.audioManager.playSFX('digSFX');
             }
 
             this._allRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false));

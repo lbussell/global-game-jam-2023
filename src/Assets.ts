@@ -121,6 +121,16 @@ export const StartBackground: Asset = {
     assetLocation: 'assets/startscreen.png'
 }
 
+export const KSFX: Asset = {
+    key: 'kSFX', 
+    assetLocation: 'assets/audio/kpop.ogg'
+}
+
+export const H2OSFX: Asset = {
+    key: 'h2oSFX', 
+    assetLocation: 'assets/audio/waterpop.ogg'
+}
+
 export const AssetLoader = {
     loadFont: (scene: Phaser.Scene, font: Font) =>
         scene.load.bitmapFont(
