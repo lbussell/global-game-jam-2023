@@ -120,6 +120,6 @@ export default class Underground {
             return null;
         }
 
-        return this._undergroundGrid[tilePosition.x][tilePosition.y];
+        return this._undergroundGrid[tilePosition.y][tilePosition.x];
     }
 }

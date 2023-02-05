@@ -337,7 +337,6 @@ export default class Root {
 
                 if (tile != null)
                 {
-                    console.log("Found resource!")
                     this._gameManager.attachTo(tile);
                 }
             }
