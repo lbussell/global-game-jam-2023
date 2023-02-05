@@ -57,13 +57,14 @@ export default class World extends Phaser.Scene {
   }
 
   create() {
-    this.gameManager = new GameManager();
-    this.gameManager = new GameManager();
+    this.tree = new ProceduralTree(this, Constants.WINDOW_SIZE.w/2, Constants.WINDOW_SIZE.h/2);
+    this.gameManager = new GameManager(this.tree);
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
 
-    this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos())
+    this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos());
+    this.inputManager.lKey.on('up', () => this.gameManager?.levelUp());
 
     this.input.on('wheel',
       (
@@ -86,8 +87,6 @@ export default class World extends Phaser.Scene {
     });
 
     this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
-
-    this.tree = new ProceduralTree(this, Constants.WINDOW_SIZE.w/2, Constants.WINDOW_SIZE.h/2);
 
     // Don't add anything to this function below here
     this.isLoaded = true;
@@ -121,6 +120,8 @@ export default class World extends Phaser.Scene {
 
       // Draw the grid
       this.underground?.drawGrid();
+
+      this.tree?.animateLeaves(time);
     }
   }
 }

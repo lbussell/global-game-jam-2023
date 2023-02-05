@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import ProceduralTree from './ProceduralTree';
 import { ResourceTile, ResourceTileType, Water, Potassium } from './Resources';
 
 export interface ResourceAmounts {
@@ -9,6 +10,10 @@ export interface ResourceAmounts {
 }
 
 export default class GameManager {
+
+    public get treeLevel() {
+        return this._tree.level;
+    }
 
     private _basePhotosynthesisRate = 0.2;
     private _photosynthesisRateMultiplier = 1;
@@ -24,7 +29,7 @@ export default class GameManager {
         glucose: 0
     }
 
-    constructor() {
+    constructor(private _tree: ProceduralTree) {
         this.resourceAmounts = {
             sunlightCollectionRate: 2,
             water: 0,
@@ -37,6 +42,11 @@ export default class GameManager {
             Water(128), Water(128), Water(128),
             Potassium(128), Potassium(128)
         ];
+    }
+
+    public levelUp() {
+        // TODO: eat resources here
+        this._tree.levelUp();
     }
 
     public updateAttachedResources(dt: number) {
