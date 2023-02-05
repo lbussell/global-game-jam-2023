@@ -45,7 +45,6 @@ export default class MapGenerator
         if (position.x < 0 || position.x >= this._mapDimensions.x ||
             position.y < 0 || position.y >= this._mapDimensions.y)
         {
-            console.log(position.x, position.y);
             return true;
         }
 
@@ -54,8 +53,6 @@ export default class MapGenerator
 
     private DrawResourceConfiguration(configuration : number[][], gridPosition : Phaser.Math.Vector2, resource : ResourceTileType, resourceAmount : number) 
     {
-        let count = 0;
-
         for (let r = 0; r < configuration.length; ++r)
         {
             for (let c = 0; c < configuration[r].length; ++c)
@@ -69,7 +66,6 @@ export default class MapGenerator
                         case ResourceTileType.Water:
                         {
                             resourceTile = Water(resourceAmount, configuration[r][c]);
-                            count += 1;
                             break;
                         }
                         case ResourceTileType.Potassium:
@@ -81,8 +77,6 @@ export default class MapGenerator
                 }
             }
         }
-
-        console.log(count);
     }
 
     private DoResourcesOverlap(configuration : number[][], gridPosition : Phaser.Math.Vector2)
