@@ -97,12 +97,13 @@ export default class World extends Phaser.Scene {
         deltaY: number,
         event: Phaser.Types.Input.EventData
       ) => {
-        if (deltaY > 0) {
-          this.cameraManager?.MoveCameraUp();
-        }
-        if (deltaY < 0) {
-          this.cameraManager?.MoveCameraDown();
-        }
+        this.cameraManager?.MoveCamera(deltaY);
+        // if (deltaY > 0) {
+        //   this.cameraManager?.MoveCameraUp();
+        // }
+        // if (deltaY < 0) {
+        //   this.cameraManager?.MoveCameraDown();
+        // }
       })
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
