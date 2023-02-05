@@ -75,6 +75,7 @@ export default class World extends Phaser.Scene {
     this.underground = new Underground(this, this.cameras.main);
     this.audioManager = new AudioManager(this, ['aboveground', 'underground']);
     this.audioManager.playLoops();
+    this.input.keyboard.on('keydown-M', () => this.audioManager?.toggleMuteAll());
 
     this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos());
     this.inputManager.lKey.on('up', () => this.gameManager?.levelUp());
