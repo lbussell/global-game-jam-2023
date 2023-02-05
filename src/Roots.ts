@@ -335,8 +335,6 @@ export default class Root {
             {
                 let tile = this._underground.getResourceTileAtWorldPos(tilePoints[i]);
 
-                console.log
-
                 if (tile != null)
                 {
                     this._gameManager.attachTo(tile);
