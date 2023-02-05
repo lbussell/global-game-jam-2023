@@ -19,7 +19,7 @@ export default class AudioManager {
 
     private paused: boolean = false;
 
-    constructor(scene: Phaser.Scene, loopsToAdd: string[]){
+    constructor(scene: Phaser.Scene, loopsToAdd: string[], sfxToAdd: string[]){
         this._camera = scene.cameras.main;
         this._scene = scene;
         this.groundLevelScrollValue = scene.cameras.main.scrollY;
@@ -27,6 +27,11 @@ export default class AudioManager {
             assetKey => {
                 this.audioLoops.push(scene.sound.add(assetKey, { loop: true }));
             });
+        sfxToAdd.forEach(
+            assetKey => {
+                scene.sound.add(assetKey)
+            }
+        )
 
         this.aboveGround = scene.sound.get('aboveground');
         this.underGround = scene.sound.get('underground');
@@ -50,6 +55,11 @@ export default class AudioManager {
     public toggleMuteAll() {
         this.paused ? this.audioLoops.forEach(loop => loop.resume()) : this.audioLoops.forEach(loop => loop.pause());
         this.paused = !this.paused;
+    }
+
+    public playSFX(name: string){
+        const sound = this._scene.sound.get(name);
+        sound.play();
     }
 
 
