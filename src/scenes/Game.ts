@@ -13,7 +13,9 @@ import {
   WaterTiles,
   PotassiumTiles,
   AbovegroundBGM,
-  UndergroundBGM
+  UndergroundBGM,
+  ParticleSprite,
+  DiggingSFX
 } from '../Assets';
 
 import Underground from '../Underground';
@@ -23,11 +25,14 @@ import CameraManager from "../CameraManager";
 import GameManager from "../GameManager";
 import ProceduralTree from "../ProceduralTree";
 import AudioManager from "../AudioManager";
+import ParticleManaager from "../ParticleManager";
+import { NormalRoot, GlassRoot, RootType } from "../RootTypes";
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;
   public isLoaded: boolean;
 
+  private particleManager?: ParticleManaager;
   private cameraManager?: CameraManager;
   private inputManager?: InputManager;
   private underground?: Underground;
@@ -35,6 +40,7 @@ export default class World extends Phaser.Scene {
   private tree?: ProceduralTree;
   private clicked: integer;
   private lastGhost: number = 0;
+  private activeRootType: RootType = NormalRoot();
 
   private timeText?: Phaser.GameObjects.BitmapText;
 
@@ -53,6 +59,7 @@ export default class World extends Phaser.Scene {
     AssetLoader.loadSprite(this, BranchSprite)
     AssetLoader.loadSprite(this, LeavesSprite)
     AssetLoader.loadSprite(this, RootSprite);
+    AssetLoader.loadSprite(this, ParticleSprite);
     AssetLoader.loadSpriteSheet(this, TestTiles);
     AssetLoader.loadSpriteSheet(this, WaterTiles);
     AssetLoader.loadSpriteSheet(this, PotassiumTiles);
@@ -61,6 +68,7 @@ export default class World extends Phaser.Scene {
 
     AssetLoader.loadAudio(this, AbovegroundBGM);
     AssetLoader.loadAudio(this, UndergroundBGM);
+    AssetLoader.loadAudio(this, DiggingSFX);
   }
 
   unload() {
@@ -73,7 +81,8 @@ export default class World extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
-    this.audioManager = new AudioManager(this, ['aboveground', 'underground']);
+    this.particleManager = new ParticleManaager(this);
+    this.audioManager = new AudioManager(this, ['aboveground', 'underground'], ['digSFX']);
     this.audioManager.playLoops();
     this.input.keyboard.on('keydown-M', () => this.audioManager?.toggleMuteAll());
 
@@ -100,7 +109,7 @@ export default class World extends Phaser.Scene {
       // click stuff here
     });
 
-    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground, this.gameManager);
+    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground, this.gameManager, this.particleManager);
 
     // Don't add anything to this function below here
     this.isLoaded = true;
@@ -122,18 +131,18 @@ export default class World extends Phaser.Scene {
       {
         if (this.clicked + 300 < time )
         {
-          this.roots?.createGhost(worldPoint);
+          this.roots?.createGhost(worldPoint, this.activeRootType);
           this.clicked = time;
         }
         else if (this.lastGhost + 50 < time)
         {
-          this.roots?.findAndDrawBestGhost(worldPoint);
+          this.roots?.findAndDrawBestGhost(worldPoint, this.activeRootType);
           this.lastGhost = time;
         }
       }
       else if (this.lastGhost + 50 < time)
       {
-        this.roots?.findAndDrawBestGhost(worldPoint);
+        this.roots?.findAndDrawBestGhost(worldPoint, this.activeRootType);
         this.lastGhost = time;
       }
 
