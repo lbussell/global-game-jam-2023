@@ -116,7 +116,7 @@ export default class UI extends Phaser.Scene {
         }
 
         if (this._isLoaded) {
-            this._sunText?.setText(numsToText(0, r.sunlightCollectionRate));
+            this._sunText?.setText(numsToText(r.sunlight, r.sunlightCollectionRate - r.glucoseRate));
             this._potasText?.setText(numsToText(r.potassium, r.potassiumRate));
             this._waterText?.setText(numsToText(r.water, r.waterRate));
             this._glucoseText?.setText(numsToText(r.glucose, r.glucoseRate));

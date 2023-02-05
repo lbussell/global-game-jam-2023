@@ -8,6 +8,7 @@ import {
 import { RootSprites } from './Assets';
 import GameManager from "./GameManager";
 import ParticleManaager from "./ParticleManager";
+import { RootType, NormalRoot, GlassRoot } from "./RootTypes";
 
 export default class Root {
     private _lastPoints: Phaser.Math.Vector2[];
@@ -20,7 +21,8 @@ export default class Root {
     private _ghostRope: Phaser.GameObjects.Rope | undefined = undefined;
     private _ghostRopes: Phaser.GameObjects.Rope[] = [];
     private _ghostPoints: Phaser.Math.Vector2[];
-    private _ghostColor = Phaser.Display.Color.GetColor32(75, 180, 180, 150);
+    private _ghostOkColor = Phaser.Display.Color.GetColor32(75, 180, 180, 150);
+    private _ghostInvalidColor = Phaser.Display.Color.GetColor32(180, 75, 75, 150);
     private _currentFrames: number[] = [];
 
     private _growthDistance = 32 / 3 * Constants.TILE_SCALE;
@@ -61,34 +63,7 @@ export default class Root {
         this._allRopes.push(scene.add.rope(0, 0, RootSprites.key, 0, this._lastPoints, false));
     }
 
-    // Returns closest point of the root to the given point, and its direction vector
-    // TODO: Favors existing root ends
-    getClosestPoint(worldPoint: Phaser.Math.Vector2): [Phaser.Math.Vector2, Phaser.Math.Vector2 | undefined] {
-        if (this._allPoints.length < 1)
-        {
-            return [new Phaser.Math.Vector2(0, 0), undefined]
-        }
-
-        let closestPoint: Phaser.Math.Vector2 = this._allPoints[0];
-        let closestPointDirection: Phaser.Math.Vector2 | undefined = undefined;
-        let closestPointDistance = worldPoint.distanceSq(closestPoint);
-
-        for (let i=1; i<this._allPoints.length; i++)
-        {
-            // Check if closer to this point
-            if (worldPoint.distanceSq(this._allPoints[i]) < closestPointDistance)
-            {
-                closestPoint = this._allPoints[i];
-                closestPointDirection = this._allPoints[i].clone().subtract(this._allPoints[i- 1]).normalize();
-                closestPointDistance = worldPoint.distanceSq(closestPoint);
-            }
-        }
-
-        return [closestPoint,
-            closestPointDirection];
-    }
-
-    findAndDrawBestGhost(worldPoint: Phaser.Math.Vector2): boolean {
+    findAndDrawBestGhost(worldPoint: Phaser.Math.Vector2, type: RootType): boolean {
         if (this._allPoints.length < 1)
         {
             return false;
@@ -162,12 +137,12 @@ export default class Root {
             }
         }
 
-        this.drawGhost(bestPoints);
+        this.drawGhost(bestPoints, type);
 
         return true;
     }
 
-    drawGhost(points: Phaser.Math.Vector2[]): void {
+    drawGhost(points: Phaser.Math.Vector2[], type: RootType): void {
         // Cannot draw if we don't have at least 3 points
         if (points.length < 3)
         {
@@ -210,10 +185,22 @@ export default class Root {
             }
 
             // Set colors
+            let isInvalid = (this._gameManager.resourceAmounts.sunlight < type.sunCost
+            || this._gameManager.resourceAmounts.water < type.waterCost
+            || this._gameManager.resourceAmounts.glucose < type.glucoseCost
+            || this._gameManager.resourceAmounts.potassium < type.potassiumCost);
+
             let colors = []
             for (let i=0; i<tilePoints.length; i++)
             {
-                colors.push(this._ghostColor);
+                if (isInvalid)
+                {
+                    colors.push(this._ghostInvalidColor);
+                }
+                else
+                {
+                    colors.push(this._ghostOkColor);
+                }
             }
 
             this._ghostRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false, colors));
@@ -301,7 +288,18 @@ export default class Root {
     }
 
     // Adds the current ghost as a new root
-    createGhost(worldPoint: Phaser.Math.Vector2): boolean {
+    createGhost(worldPoint: Phaser.Math.Vector2, type: RootType): boolean {
+        // Check for resources
+        if (this._gameManager.resourceAmounts.sunlight < type.sunCost
+            || this._gameManager.resourceAmounts.water < type.waterCost
+            || this._gameManager.resourceAmounts.glucose < type.glucoseCost
+            || this._gameManager.resourceAmounts.potassium < type.potassiumCost)
+            {
+                return false;
+            }
+
+        console.log("Cost " + type.sunCost + " (" + this._gameManager.resourceAmounts.sunlight + ")");
+    
         // Insert new point
         this._lastPoints = this._ghostPoints;
         this._allPoints = this._allPoints.concat(this._lastPoints);
@@ -353,6 +351,12 @@ export default class Root {
         {
             this._currentFrames.push(Phaser.Math.Between(0, 7));
         }
+
+        // Subtract cost
+        this._gameManager.resourceAmounts.sunlight -= type.sunCost;
+        this._gameManager.resourceAmounts.water -= type.waterCost;
+        this._gameManager.resourceAmounts.glucose -= type.glucoseCost;
+        this._gameManager.resourceAmounts.potassium -= type.potassiumCost;
 
         return true;
     }

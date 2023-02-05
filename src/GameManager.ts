@@ -26,12 +26,7 @@ export default class GameManager {
 
     private attachedResources: ResourceTile[] = [];
 
-    public resourceAmounts: ResourceAmounts = {
-        sunlightCollectionRate: 0,
-        water: 0,
-        potassium: 0,
-        glucose: 0
-    }
+    public resourceAmounts: ResourceAmounts;
 
     constructor(private _tree: ProceduralTree) {
         this.resourceAmounts = {
@@ -94,12 +89,15 @@ export default class GameManager {
             }
         });
 
+        this.resourceAmounts.sunlight += this.resourceAmounts.sunlightCollectionRate * dt;
+
+        let photosynthesisAmt = this._basePhotosynthesisRate * this._photosynthesisRateMultiplier * dt;
+        photosynthesisAmt = Math.min(this.resourceAmounts.sunlight, photosynthesisAmt);
+
         // convert sunlight into glucose via photosynthesis
-        this.resourceAmounts.glucose += 
-            this.resourceAmounts.sunlightCollectionRate 
-            * this._basePhotosynthesisRate
-            * this._photosynthesisRateMultiplier
-            * dt;
+        this.resourceAmounts.glucose += photosynthesisAmt;
+        this.resourceAmounts.sunlight -= photosynthesisAmt;
+
 
         this.resourceAmounts.waterRate = (this.resourceAmounts.water - oldWater)/dt;
         this.resourceAmounts.glucoseRate = (this.resourceAmounts.glucose - oldGlucose)/dt;
