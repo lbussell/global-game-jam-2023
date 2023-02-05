@@ -5,7 +5,7 @@ import {
   Size,
   Position,
 } from './Constants';
-import { RootSprite } from './Assets';
+import { RootSprites } from './Assets';
 
 export default class Root {
     private _lastPoints: Phaser.Math.Vector2[];
@@ -15,13 +15,15 @@ export default class Root {
 
     private _allRopes: Phaser.GameObjects.Rope[];
     private _ghostRope: Phaser.GameObjects.Rope | undefined = undefined;
+    private _ghostRopes: Phaser.GameObjects.Rope[] = [];
     private _ghostPoints: Phaser.Math.Vector2[];
     private _ghostColor = Phaser.Display.Color.GetColor32(75, 180, 180, 150);
+    private _currentFrames: number[] = [];
 
-    private _growthDistance = 8;
+    private _growthDistance = 32;
     private _maxGhosts = 100;
     private _maxAngleRadians = 0.06;
-    private _upAngleRestriction = Math.PI / 2;
+    private _upAngleRestriction = Math.PI / 3;
     private _explorationPoints = 20;
 
     private _upVector = new Phaser.Math.Vector2(0, -1);
@@ -45,10 +47,14 @@ export default class Root {
 
         this._ghostPoints = [];
 
+        for (let i=0; i<this._maxGhosts; i++)
+        {
+            this._currentFrames.push(Phaser.Math.Between(0, 7));
+        }
 
         // Track all ropes in the "full" rope
         this._allRopes = [];
-        this._allRopes.push(scene.add.rope(0, 0, RootSprite.key, undefined, this._lastPoints, false));
+        this._allRopes.push(scene.add.rope(0, 0, RootSprites.key, 0, this._lastPoints, false));
     }
 
     // Returns closest point of the root to the given point, and its direction vector
@@ -60,19 +66,12 @@ export default class Root {
             return [new Phaser.Math.Vector2(0, 0), undefined]
         }
 
-
         let closestPoint: Phaser.Math.Vector2 = this._allPoints[0];
         let closestPointDirection: Phaser.Math.Vector2 | undefined = undefined;
         let closestPointDistance = worldPoint.distanceSq(closestPoint);
 
         for (let i=1; i<this._allPoints.length; i++)
         {
-            // Cannot move upwards, so only consider points on or above the current level
-            if (worldPoint.y < this._allPoints[i].y)
-            {
-                continue;
-            }
-
             // Check if closer to this point
             if (worldPoint.distanceSq(this._allPoints[i]) < closestPointDistance)
             {
@@ -102,12 +101,6 @@ export default class Root {
 
         for (let i=1; i<this._allPoints.length; i++)
         {
-            // Cannot move upwards, so only consider points on or above the current level
-            if (worldPoint.y < this._allPoints[i].y)
-            {
-                continue;
-            }
-
             // Check if starting at this points gets closer
             let currentPoint = this._allPoints[i];
             let distance = worldPoint.distanceSq(currentPoint);
@@ -135,12 +128,6 @@ export default class Root {
         {
             let i = closestPointIndexes[j];
             if (i == -1)
-            {
-                continue;
-            }
-
-            // Cannot move upwards, so only consider points on or above the current level
-            if (worldPoint.y < this._allPoints[i].y)
             {
                 continue;
             }
@@ -173,29 +160,56 @@ export default class Root {
     }
 
     drawGhost(points: Phaser.Math.Vector2[]): void {
-        // Cannot draw if we don't have at least 2 points
-        if (points.length < 2)
+        // Cannot draw if we don't have at least 3 points
+        if (points.length < 3)
         {
             return;
         }
 
         // Clear ghost ropes
-        if (this._ghostRope != undefined)
+        for (let i = 0; i < this._ghostRopes.length; i++)
         {
-            this._ghostRope.destroy();
+            this._ghostRopes[i].destroy();
         }
 
+        this._ghostRopes = [];
         this._ghostPoints = points;
 
-        // Set colors
-        let colors = []
-        for (let i=0; i<this._ghostPoints.length; i++)
-        {
-            colors.push(this._ghostColor);
-        }
-
         // Draw Ghost rope
-        this._ghostRope = this._scene.add.rope(0, 0, RootSprite.key, undefined, points, false, colors);
+        let idx = 0;
+        let frameIdx = 0;
+        while (idx < points.length)
+        {
+            let tilePoints = [];
+            if (--idx < 0)
+            {
+                idx = 0;
+            }
+
+            for (let i=0; i<this._growthDistance; i++)
+            {
+                if (idx >= points.length)
+                {
+                    break;
+                }
+
+                tilePoints.push(points[idx++]);
+            }
+
+            if (tilePoints.length < 2)
+            {
+                break;
+            }
+
+            // Set colors
+            let colors = []
+            for (let i=0; i<tilePoints.length; i++)
+            {
+                colors.push(this._ghostColor);
+            }
+
+            this._ghostRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false, colors));
+        }
     }
 
     // Draws a ghost of root to the given position
@@ -208,7 +222,7 @@ export default class Root {
         let lastDistance = 100000;
 
         // Build ghost points
-        while (points.length < this._maxGhosts && points[points.length - 1].distance(worldPoint) > this._growthDistance)
+        while (points.length < this._maxGhosts && points[points.length - 1].distance(worldPoint) > 1)
         {
             let direction = points[points.length-1].clone()
                 .subtract(worldPoint)
@@ -265,6 +279,12 @@ export default class Root {
                 lastDistance = newPoint.distanceSq(worldPoint)
             }
 
+            // Do not build above the surface
+            if (newPoint.y < 5)
+            {
+                break;
+            }
+
             points.push(newPoint)
             currentDirection = direction;
         }
@@ -272,22 +292,48 @@ export default class Root {
         return points;
     }
 
-    // Attempts to add a new point to the end of the Roots
-    // Returns True if the point was added
-    // Returns False otherwise
-    addPoint(worldPoint: Phaser.Math.Vector2): boolean {
-        // Do not add point if distance is less than growth distance
-        if (worldPoint.clone().subtract(this._lastPoints[this._lastPoints.length - 1]).lengthSq() < (this._growthDistance * this._growthDistance))
-        {
-            return false;
-        }
-
+    // Adds the current ghost as a new root
+    createGhost(worldPoint: Phaser.Math.Vector2): boolean {
         // Insert new point
         this._lastPoints = this._ghostPoints;
         this._allPoints = this._allPoints.concat(this._lastPoints);
 
-        // Create new rope using the current point set
-        this._allRopes.push(this._scene.add.rope(0, 0, RootSprite.key, undefined, this._lastPoints, false));
+        // Draw rope using the current point set
+        let idx = 0;
+        let frameIdx = 0;
+        while (idx < this._lastPoints.length)
+        {
+            let tilePoints = [];
+            if (--idx < 0)
+            {
+                idx = 0;
+            }
+
+            for (let i=0; i<this._growthDistance; i++)
+            {
+                if (idx >= this._lastPoints.length)
+                {
+                    break;
+                }
+
+                tilePoints.push(this._lastPoints[idx++]);
+            }
+
+            if (tilePoints.length < 2)
+            {
+                break;
+            }
+
+            this._allRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false));
+        }
+
+        this._currentFrames = [];
+
+        for (let i=0; i<this._maxGhosts; i++)
+        {
+            this._currentFrames.push(Phaser.Math.Between(0, 7));
+        }
+
         return true;
     }
 }

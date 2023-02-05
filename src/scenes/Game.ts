@@ -11,7 +11,7 @@ import {
   SpriteSheet,
   Sprite,
   TestTiles,
-  RootSprite,
+  RootSprites,
   ArcadeFont
 } from '../Assets';
 import Underground from '../Underground';
@@ -43,8 +43,8 @@ export default class World extends Phaser.Scene {
   }
 
   preload() {
-    AssetLoader.loadSprite(this, RootSprite);
     AssetLoader.loadSpriteSheet(this, TestTiles);
+    AssetLoader.loadSpriteSheet(this, RootSprites);
   }
 
   unload() {
@@ -112,7 +112,7 @@ export default class World extends Phaser.Scene {
           // LEGACY CONTROLLER:
           // this.underground?.click(worldPoint);
 
-          this.roots?.addPoint(worldPoint);
+          this.roots?.createGhost(worldPoint);
 
           this.clicked = time;
         }
