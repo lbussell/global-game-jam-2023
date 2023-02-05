@@ -60,8 +60,8 @@ export const LeavesSprite: Sprite = {
 
 export const ArcadeFont: Font = {
     key: "arcadeFont",
-    assetLocation: "assets/fonts/arcade.png",
-    xmlLocation: "assets/fonts/arcade.xml"
+    assetLocation: "assets/fonts/gem.png",
+    xmlLocation: "assets/fonts/gem.xml"
 }
 
 export const RootSprite: Sprite = {

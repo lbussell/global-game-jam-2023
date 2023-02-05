@@ -85,9 +85,9 @@ export default class World extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
-    this.particleManager = new ParticleManaager(this);
     this.audioManager = new AudioManager(this, ['aboveground', 'underground'], ['digSFX', 'kSFX', 'h2oSFX']);
     this.audioManager.playLoops();
+    this.particleManager = new ParticleManaager(this, this.audioManager);
     this.input.keyboard.on('keydown-M', () => this.audioManager?.toggleMuteAll());
 
     this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos());
@@ -101,12 +101,13 @@ export default class World extends Phaser.Scene {
         deltaY: number,
         event: Phaser.Types.Input.EventData
       ) => {
-        if (deltaY > 0) {
-          this.cameraManager?.MoveCameraUp();
-        }
-        if (deltaY < 0) {
-          this.cameraManager?.MoveCameraDown();
-        }
+        this.cameraManager?.MoveCamera(deltaY);
+        // if (deltaY > 0) {
+        //   this.cameraManager?.MoveCameraUp();
+        // }
+        // if (deltaY < 0) {
+        //   this.cameraManager?.MoveCameraDown();
+        // }
       })
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
