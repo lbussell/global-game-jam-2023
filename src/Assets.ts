@@ -98,6 +98,11 @@ export const UndergroundBGM: Asset = {
     assetLocation: 'assets/audio/underground-alt-lowpass3.mp3'
 }
 
+export const StartBackground: Asset = {
+    key: 'startbackground',
+    assetLocation: 'assets/startscreen.png'
+}
+
 export const AssetLoader = {
     loadFont: (scene: Phaser.Scene, font: Font) =>
         scene.load.bitmapFont(
