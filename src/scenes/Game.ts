@@ -1,12 +1,6 @@
 import Phaser, { Game, Input } from "phaser";
 import * as Constants from '../Constants';
 import { Position } from '../Constants';
-import Underground from '../Underground';
-import Roots from "../Roots";
-import InputManager from "../InputManager";
-import CameraManager from "../CameraManager";
-import GameManager from "../GameManager";
-import ProceduralTree from "../ProceduralTree";
 
 import {
   AssetLoader,
@@ -17,7 +11,17 @@ import {
   RootSprites,
   TestTiles,
   WaterTiles,
+  AbovegroundBGM,
+  UndergroundBGM
 } from '../Assets';
+
+import Underground from '../Underground';
+import Roots from "../Roots";
+import InputManager from "../InputManager";
+import CameraManager from "../CameraManager";
+import GameManager from "../GameManager";
+import ProceduralTree from "../ProceduralTree";
+import AudioManager from "../AudioManager";
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;
@@ -32,6 +36,8 @@ export default class World extends Phaser.Scene {
   private lastGhost: number = 0;
 
   private timeText?: Phaser.GameObjects.BitmapText;
+
+  private audioManager?: AudioManager;
 
   constructor() {
     super("GameScene");
@@ -50,6 +56,9 @@ export default class World extends Phaser.Scene {
     AssetLoader.loadSpriteSheet(this, WaterTiles);
     AssetLoader.loadSpriteSheet(this, RootSprites);
     AssetLoader.loadSpriteSheet(this, GroundTiles);
+
+    AssetLoader.loadAudio(this, AbovegroundBGM);
+    AssetLoader.loadAudio(this, UndergroundBGM);
   }
 
   unload() {
@@ -62,6 +71,8 @@ export default class World extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
+    this.audioManager = new AudioManager(this, ['aboveground', 'underground']);
+    this.audioManager.playLoops();
 
     this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos());
     this.inputManager.lKey.on('up', () => this.gameManager?.levelUp());
@@ -86,7 +97,7 @@ export default class World extends Phaser.Scene {
       // click stuff here
     });
 
-    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
+    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground, this.gameManager);
 
     // Don't add anything to this function below here
     this.isLoaded = true;
@@ -111,6 +122,11 @@ export default class World extends Phaser.Scene {
           this.roots?.createGhost(worldPoint);
           this.clicked = time;
         }
+        else if (this.lastGhost + 50 < time)
+        {
+          this.roots?.findAndDrawBestGhost(worldPoint);
+          this.lastGhost = time;
+        }
       }
       else if (this.lastGhost + 50 < time)
       {
@@ -122,6 +138,8 @@ export default class World extends Phaser.Scene {
       this.underground?.drawGrid();
 
       this.tree?.animateLeaves(time);
+      //manage audio switching between above/belowground
+      this.audioManager?.interpolateVolume();
     }
   }
 }

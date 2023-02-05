@@ -3,10 +3,14 @@ import ProceduralTree from './ProceduralTree';
 import { ResourceTile, ResourceTileType, Water, Potassium } from './Resources';
 
 export interface ResourceAmounts {
+    sunlight: number,
     sunlightCollectionRate: number,
     water: number,
+    waterRate: number,
     potassium: number,
-    glucose: number
+    potassiumRate: number,
+    glucose: number,
+    glucoseRate: number
 }
 
 export default class GameManager {
@@ -31,16 +35,20 @@ export default class GameManager {
 
     constructor(private _tree: ProceduralTree) {
         this.resourceAmounts = {
+            sunlight: 0,
             sunlightCollectionRate: 2,
             water: 0,
+            waterRate: 0,
             potassium: 0,
-            glucose: 0
+            potassiumRate: 0,
+            glucose: 0,
+            glucoseRate: 0
         }
 
         // start with some fake attached resources until we actually hook them up in the game
         this.attachedResources = [
-            Water(128), Water(128), Water(128),
-            Potassium(128), Potassium(128)
+            Water(-1, 128, -1), Water(-1, 128, -1), Water(-1, 128, -1),
+            Potassium(-1, 128), Potassium(-1, 128)
         ];
     }
 
@@ -51,6 +59,10 @@ export default class GameManager {
 
     public updateAttachedResources(dt: number) {
         dt = dt/1000;
+
+        let oldWater = this.resourceAmounts.water;
+        let oldPotassium = this.resourceAmounts.potassium;
+        let oldGlucose = this.resourceAmounts.glucose;
 
         // grab resources from the ground
         this.attachedResources.forEach(r => {
@@ -88,9 +100,22 @@ export default class GameManager {
             * this._basePhotosynthesisRate
             * this._photosynthesisRateMultiplier
             * dt;
+
+        this.resourceAmounts.waterRate = (this.resourceAmounts.water - oldWater)/dt;
+        this.resourceAmounts.glucoseRate = (this.resourceAmounts.glucose - oldGlucose)/dt;
+        this.resourceAmounts.potassiumRate = (this.resourceAmounts.potassium - oldPotassium)/dt;
     }
 
     public attachTo(tile: ResourceTile) {
+
+        for (let i=0; i< this.attachedResources.length; i++)
+        {
+            if (this.attachedResources[i].id == tile.id)
+            {
+                return;
+            }
+        }
+
         this.attachedResources.push(tile);
     }
 }

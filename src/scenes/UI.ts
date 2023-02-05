@@ -20,7 +20,7 @@ export default class UI extends Phaser.Scene {
     private _bottomRect?: Phaser.GameObjects.Rectangle;
     private readonly _bottomRectHeightInTiles: number = 3;
     private _rightRect?: Phaser.GameObjects.Rectangle;
-    private readonly _rightRectWidthInTiles: number = 3;
+    private readonly _rightRectWidthInTiles: number = 5;
     private _menuBGColor: number = 0x000000; // black
 
     private _sunText?: Phaser.GameObjects.BitmapText;
@@ -63,7 +63,7 @@ export default class UI extends Phaser.Scene {
 
         // math for placing text and other ui elements //
 
-        const pad = TILE_SCALE*4;
+        const pad = TILE_SCALE*11;
 
         const sloty = (slot: number): number => pad + scaledTileSize*4*(slot-1);
 
@@ -110,13 +110,27 @@ export default class UI extends Phaser.Scene {
     }
 
     updateResourceUI(r: ResourceAmounts): void {
+
+        function numsToText(amt: number, increase: number): string {
+            return amt.toFixed(0).toString() + "(+" + increase.toFixed(1).toString() + ")"
+        }
+
         if (this._isLoaded) {
-            this._sunText?.setText(r.sunlightCollectionRate.toFixed(0).toString());
-            this._potasText?.setText(r.potassium.toFixed(0).toString());
-            this._waterText?.setText(r.water.toFixed(0).toString());
-            this._glucoseText?.setText(r.glucose.toFixed(0).toString());
+            this._sunText?.setText(numsToText(0, r.sunlightCollectionRate));
+            this._potasText?.setText(numsToText(r.potassium, r.potassiumRate));
+            this._waterText?.setText(numsToText(r.water, r.waterRate));
+            this._glucoseText?.setText(numsToText(r.glucose, r.glucoseRate));
         }
     }
+
+    // updateResourceUI(r: ResourceAmounts): void {
+    //     if (this._isLoaded) {
+    //         this._sunText?.setText(r.sunlightCollectionRate.toFixed(0).toString());
+    //         this._potasText?.setText(r.potassium.toFixed(0).toString());
+    //         this._waterText?.setText(r.water.toFixed(0).toString());
+    //         this._glucoseText?.setText(r.glucose.toFixed(0).toString());
+    //     }
+    // }
 
     addSprite(x: number, y: number, s: Sprite) {
         return this.add.sprite(x, y, s.key).setOrigin(0, 0).setScale(TILE_SCALE);
