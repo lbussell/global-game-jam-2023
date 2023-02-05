@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import ProceduralTree from './ProceduralTree';
 import { ResourceTile, ResourceTileType, Water, Potassium } from './Resources';
+import { GlassRoot, RootType, RootTypes } from './RootTypes';
 
 export interface ResourceAmounts {
     sunlight: number,
@@ -105,7 +106,12 @@ export default class GameManager {
     }
 
     // return true if the attach was successful
-    public attachTo(tile: ResourceTile): boolean {
+    public attachTo(tile: ResourceTile, rootType : RootType): boolean {
+
+        if (rootType.rootType == RootTypes.Glass)
+        {
+            return false;
+        }
 
         for (let i=0; i< this.attachedResources.length; i++)
         {
@@ -113,6 +119,12 @@ export default class GameManager {
             {
                 return false;
             }
+        }
+
+        if (rootType.rootType == RootTypes.Efficient)
+        {
+            tile.ratePerSec /= 2;
+            tile.resourceQuantity *= 2;
         }
 
         this.attachedResources.push(tile);

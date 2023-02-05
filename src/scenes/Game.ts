@@ -26,7 +26,7 @@ import GameManager from "../GameManager";
 import ProceduralTree from "../ProceduralTree";
 import AudioManager from "../AudioManager";
 import ParticleManaager from "../ParticleManager";
-import { NormalRoot, GlassRoot, RootType } from "../RootTypes";
+import { NormalRoot, GlassRoot, RootType, RootTypes, AllRootTypes } from "../RootTypes";
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;
@@ -41,6 +41,7 @@ export default class World extends Phaser.Scene {
   private clicked: integer;
   private lastGhost: number = 0;
   private activeRootType: RootType = NormalRoot();
+  private activeRootTypeIndex : RootTypes = RootTypes.Normal;
 
   private timeText?: Phaser.GameObjects.BitmapText;
 
@@ -53,6 +54,19 @@ export default class World extends Phaser.Scene {
 
     // stuff that will be loaded in create()
     this.timeText = undefined;
+  }
+
+  private UpdateActiveRootType()
+  {
+    this.inputManager?.space.on('up', () =>
+    {
+      if (++this.activeRootTypeIndex >= AllRootTypes().length)
+      {
+        this.activeRootTypeIndex = 0;
+      }
+      
+      this.activeRootType = AllRootTypes()[this.activeRootTypeIndex];
+    });
   }
 
   preload() {
@@ -126,6 +140,8 @@ export default class World extends Phaser.Scene {
       this.gameManager?.updateAttachedResources(delta);
 
       this.gameManager?.updateAttachedResources(delta);
+
+      this.UpdateActiveRootType();
 
       if (this.input.manager.activePointer.isDown)
       {
