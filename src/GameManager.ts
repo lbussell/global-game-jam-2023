@@ -27,10 +27,14 @@ export default class GameManager {
     private attachedResources: ResourceTile[] = [];
 
     public resourceAmounts: ResourceAmounts = {
+        sunlight: 0,
         sunlightCollectionRate: 0,
         water: 0,
         potassium: 0,
-        glucose: 0
+        glucose: 0,
+        waterRate: 0,
+        potassiumRate: 0,
+        glucoseRate: 0
     }
 
     constructor(private _tree: ProceduralTree) {
@@ -48,7 +52,7 @@ export default class GameManager {
         // start with some fake attached resources until we actually hook them up in the game
         this.attachedResources = [
             Water(-1, 128, -1), Water(-1, 128, -1), Water(-1, 128, -1),
-            Potassium(-1, 128), Potassium(-1, 128)
+            Potassium(-1, 128, -1), Potassium(-1, 128, -1)
         ];
     }
 
