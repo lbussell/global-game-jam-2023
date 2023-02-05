@@ -23,6 +23,7 @@ import CameraManager from "../CameraManager";
 import GameManager from "../GameManager";
 import ProceduralTree from "../ProceduralTree";
 import AudioManager from "../AudioManager";
+import { NormalRoot, GlassRoot, RootType } from "../RootTypes";
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;
@@ -35,6 +36,7 @@ export default class World extends Phaser.Scene {
   private tree?: ProceduralTree;
   private clicked: integer;
   private lastGhost: number = 0;
+  private activeRootType: RootType = NormalRoot();
 
   private timeText?: Phaser.GameObjects.BitmapText;
 
@@ -122,18 +124,18 @@ export default class World extends Phaser.Scene {
       {
         if (this.clicked + 300 < time )
         {
-          this.roots?.createGhost(worldPoint);
+          this.roots?.createGhost(worldPoint, this.activeRootType);
           this.clicked = time;
         }
         else if (this.lastGhost + 50 < time)
         {
-          this.roots?.findAndDrawBestGhost(worldPoint);
+          this.roots?.findAndDrawBestGhost(worldPoint, this.activeRootType);
           this.lastGhost = time;
         }
       }
       else if (this.lastGhost + 50 < time)
       {
-        this.roots?.findAndDrawBestGhost(worldPoint);
+        this.roots?.findAndDrawBestGhost(worldPoint, this.activeRootType);
         this.lastGhost = time;
       }
 

@@ -26,12 +26,7 @@ export default class GameManager {
 
     private attachedResources: ResourceTile[] = [];
 
-    public resourceAmounts: ResourceAmounts = {
-        sunlightCollectionRate: 0,
-        water: 0,
-        potassium: 0,
-        glucose: 0
-    }
+    public resourceAmounts: ResourceAmounts;
 
     constructor(private _tree: ProceduralTree) {
         this.resourceAmounts = {
