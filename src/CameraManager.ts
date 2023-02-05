@@ -5,7 +5,7 @@ import {
 
 const OVERWORLD_CAM_POINT: Position = {
     x: Constants.MAP_WIDTH * Constants.TILE_SIZE * Constants.TILE_SCALE / 2,
-    y: -Constants.WINDOW_SIZE.h/2 + 100
+    y: -Constants.WINDOW_SIZE.h/2 + 128
 }
 
 const UNDERWORLD_CAM_POINT: Position = {

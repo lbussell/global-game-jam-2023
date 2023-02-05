@@ -9,15 +9,15 @@ import {
 import {
     Dirt,
     Water,
-    Nitrogen,
-    Fertilizer,
-    Carbon,
     Root,
-    TilemapLayer
+    Potassium,
+    TilemapLayer,
+    ResourceTile
 } from './Resources'
 
 import { TestTiles } from './Assets';
 import { TilemapObject } from "./Resources";
+import  MapGenerator, { ResourceGenerationData} from "./MapGenerator";
 
 export default class Underground {
     private _tilemap: Phaser.Tilemaps.Tilemap;
@@ -26,6 +26,8 @@ export default class Underground {
     private _seed: number;
 
     private _undergroundGrid: (TilemapObject | null)[][];
+
+    private _undergroundMapGenerator : MapGenerator;
 
     constructor(scene: Phaser.Scene, camera: Phaser.Cameras.Scene2D.Camera, seed: number = 0) {
         this._scene = scene;
@@ -57,21 +59,28 @@ export default class Underground {
             Constants.MAP_HEIGHT
         );
 
-        // initialize resources
+        // initialize map generator and generate grid
+        var generationData = new Map<ResourceTile, ResourceGenerationData>();
+        generationData.set(Water(0), new ResourceGenerationData(0.05, 0.005, 1, 5));
+        generationData.set(Potassium(0), new ResourceGenerationData(0.1, 0.001, 3, 10));
+        this._undergroundMapGenerator = new MapGenerator(scene, 
+            new Phaser.Math.Vector2(Constants.MAP_WIDTH, Constants.MAP_HEIGHT),
+            generationData, Math.random(), 4);
 
-        this._undergroundGrid = [];
-        for (let r = 0; r < Constants.MAP_HEIGHT; r += 1) {
-            this._undergroundGrid[r] = [];
-            for (let c = 0; c < Constants.MAP_WIDTH; c += 1) {
-                let result: TilemapObject | null = null;
-                if (Math.random() < 0.1) {
-                    result = Water(128);
-                }
+        // this._undergroundGrid = [];
+        // for (let r = 0; r < Constants.MAP_HEIGHT; r += 1) {
+        //     this._undergroundGrid[r] = [];
+        //     for (let c = 0; c < Constants.MAP_WIDTH; c += 1) {
+        //         let result: TilemapObject | null = null;
+        //         if (Math.random() < 0.1) {
+        //             result = Water(128);
+        //         }
 
-                this._undergroundGrid[r][c] = result;
-            }
-        }
-        console.log(this._undergroundGrid);
+        //         this._undergroundGrid[r][c] = result;
+        //     }
+        // }
+        // console.log(this._undergroundGrid);
+        this._undergroundGrid = this._undergroundMapGenerator.GenerateMap();
 
         const rootOrigin: Position = { x: Math.floor(Constants.MAP_WIDTH / 2), y: 0 };
         layerRoot.putTileAt(Root.tilemapIndex, rootOrigin.x, rootOrigin.y, true);

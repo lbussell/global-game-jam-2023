@@ -1,10 +1,11 @@
-import Phaser, { Input } from "phaser";
+import Phaser, { Game, Input } from "phaser";
 import * as Constants from '../Constants';
 import {
   Size,
   Position,
 } from '../Constants';
 import {
+  AssetLoader,
   Font,
   Asset,
   SpriteSheet,
@@ -17,9 +18,11 @@ import Underground from '../Underground';
 import Roots from "../Roots";
 import InputManager from "../InputManager";
 import CameraManager from "../CameraManager";
+import GameManager from "../GameManager";
 
 export default class World extends Phaser.Scene {
-  private isLoaded: boolean;
+  public gameManager?: GameManager;
+  public isLoaded: boolean;
 
   private cameraManager?: CameraManager;
   private inputManager?: InputManager;
@@ -40,9 +43,8 @@ export default class World extends Phaser.Scene {
   }
 
   preload() {
-    this.loadSpriteSheet(TestTiles);
-    this.loadSprite(RootSprite);
-    this.loadFont(ArcadeFont);
+    AssetLoader.loadSprite(this, RootSprite);
+    AssetLoader.loadSpriteSheet(this, TestTiles);
   }
 
   unload() {
@@ -50,6 +52,7 @@ export default class World extends Phaser.Scene {
   }
 
   create() {
+    this.gameManager = new GameManager();
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
@@ -81,9 +84,9 @@ export default class World extends Phaser.Scene {
       })
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY));
+      // old underground tile-based root logic:
+      // this.underground?.click(new Phaser.Math.Vector2(pointer.worldX, pointer.worldY));
     });
-
 
     this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
 
@@ -98,6 +101,8 @@ export default class World extends Phaser.Scene {
   update(time: number, delta: number): void {
     if (this.isLoaded) {
       const worldPoint: Phaser.Math.Vector2 = <Phaser.Math.Vector2> this.input.activePointer.positionToCamera(this.cameras.main);
+
+      this.gameManager?.updateAttachedResources(delta);
 
       if (this.input.manager.activePointer.isDown)
       {
@@ -118,40 +123,8 @@ export default class World extends Phaser.Scene {
         this.lastGhost = time;
       }
 
-      this.timeText?.setText(this.formatTimeString(time));
-
       // Draw the grid
       this.underground?.drawGrid();
     }
-  }
-
-  formatTimeString(t: number): string {
-    return "t=" + t;
-  }
-
-  addBitmapText(x: number, y: number, s: string): Phaser.GameObjects.BitmapText {
-    return this.add.bitmapText(x, y, ArcadeFont.key, s).setOrigin(0).setScale(1);
-  }
-
-  addBitmapTextByLine(x: number, line: number, s: string): Phaser.GameObjects.BitmapText {
-    return this.add.bitmapText(x+4, 600-(32*line)-4, ArcadeFont.key, s).setOrigin(0, 1).setScale(1);
-  }
-
-  loadFont(font: Font) {
-    this.load.bitmapFont(font.key, font.assetLocation, font.xmlLocation);
-  }
-
-  loadSpriteSheet(ss: SpriteSheet) {
-    this.load.spritesheet(
-      ss.key,
-      ss.assetLocation,
-      { frameWidth: ss.size.w, frameHeight: ss.size.h }
-    );
-  }
-  
-  loadSprite(sprite: Sprite) {
-    this.load.image(
-      sprite.key,
-      sprite.assetLocation);
   }
 }
