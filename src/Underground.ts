@@ -19,6 +19,7 @@ import {
 import {
     TestTiles,
     WaterTiles,
+    PotassiumTiles,
     GroundTiles
 } from './Assets';
 
@@ -49,12 +50,15 @@ export default class Underground {
 
         const tiles = this._tilemap.addTilesetImage(GroundTiles.key);
         const waterTiles = this._tilemap.addTilesetImage(WaterTiles.key);
+        const potassiumTiles = this._tilemap.addTilesetImage(PotassiumTiles.key);
 
         const layerDirt = this._tilemap.createBlankLayer('dirt', tiles);
-        const layerResources = this._tilemap.createBlankLayer('resources', waterTiles);
+        const layerWater = this._tilemap.createBlankLayer('water', waterTiles);
+        const layerPotassium = this._tilemap.createBlankLayer("potassium", potassiumTiles)
 
         layerDirt.setScale(Constants.TILE_SCALE);
-        layerResources.setScale(Constants.TILE_SCALE);
+        layerWater.setScale(Constants.TILE_SCALE);
+        layerPotassium.setScale(Constants.TILE_SCALE);
 
         layerDirt.fill(
             Dirt.tilemapIndex,

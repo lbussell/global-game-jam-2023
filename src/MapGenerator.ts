@@ -6,7 +6,8 @@ import {
     ResourceTileType,
     Water,
     Potassium,
-    WaterConfigurations
+    WaterConfigurations,
+    PotassiumConfigurations
 } from './Resources';
 
 const perlinMin = -Math.sqrt(2) / 2;
@@ -45,14 +46,13 @@ export default class MapGenerator
         if (position.x < 0 || position.x >= this._mapDimensions.x ||
             position.y < 0 || position.y >= this._mapDimensions.y)
         {
-            console.log(position.x, position.y);
             return true;
         }
 
         return false;
     }
 
-    private DrawResourceConfiguration(configuration : number[][], gridPosition : Phaser.Math.Vector2, resource : ResourceTileType) 
+    private DrawResourceConfiguration(configuration : number[][], gridPosition : Phaser.Math.Vector2, resource : ResourceTileType, resourceAmount : number) 
     {
         for (let r = 0; r < configuration.length; ++r)
         {
@@ -65,13 +65,41 @@ export default class MapGenerator
                     switch (resource)
                     {
                         case ResourceTileType.Water:
-                            resourceTile = Water(this._nextId++, 0, configuration[r][c]);
+                        {
+                            resourceTile = Water(this._nextId++, resourceAmount, configuration[r][c]);
+                            break;
+                        }
+                        case ResourceTileType.Potassium:
+                            resourceTile = Potassium(this._nextId++, resourceAmount, configuration[r][c]);
+                            break;
                     }
 
                     this._grid[gridPosition.y + r][gridPosition.x + c] = resourceTile;
                 }
             }
         }
+    }
+
+    private DoResourcesOverlap(configuration : number[][], gridPosition : Phaser.Math.Vector2)
+    {
+        // Loop through the configuration 
+        for (let r = 0; r < configuration.length; ++r)
+        {
+            for (let c = 0; c < configuration[r].length; ++c)
+            {
+                // Make sure this tile is in map bounds
+                if (!this.IsOutOfBounds(new Phaser.Math.Vector2(gridPosition.x + c, gridPosition.y + r)))
+                {
+                    // If this tile has a valid tile index and there is already a tile placed here (besides dirt), return true
+                    if (configuration[r][c] >= 0 && this._grid[gridPosition.y + r][gridPosition.x + c] != null)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     public GenerateMap()
@@ -83,7 +111,7 @@ export default class MapGenerator
 
             var densityMaps : Map<Phaser.Math.Vector2, number> = new Map<Phaser.Math.Vector2, number>();
 
-            for (let chunkRow = 0; chunkRow < Math.floor(this._mapDimensions.y / this._chunkSize); ++chunkRow)
+            for (let chunkRow = 1; chunkRow < Math.floor(this._mapDimensions.y / this._chunkSize); ++chunkRow)
             {
                 for (let chunkColumn = 0; chunkColumn < Math.floor(this._mapDimensions.x / this._chunkSize); ++chunkColumn)
                 {
@@ -95,7 +123,7 @@ export default class MapGenerator
 
             densityMaps.forEach((rarity, chunkPosition) =>
             {
-                var perlinValue = this._noiseGenerator.simplex2(chunkPosition.x / (4), (chunkPosition.y / (4)) * 0.25);
+                var perlinValue = this._noiseGenerator.simplex2(chunkPosition.x / 4, (chunkPosition.y / 4) * 0.25);
 
                 if (perlinValue <= rarity && perlinValue > -rarity)
                 {
@@ -108,10 +136,29 @@ export default class MapGenerator
                         // Pick random tile inside chunk
                         xPos = Math.floor(Math.random() * this._chunkSize) + chunkPosition.x;
                         yPos = Math.floor(Math.random() * this._chunkSize) + chunkPosition.y;
+                        let gridPosition =  new Phaser.Math.Vector2(xPos, yPos);
+                        let configuration : number[][];
 
-                        if (this._grid[yPos][xPos] == null)
+                        switch (Resource)
                         {
-                            this.DrawResourceConfiguration(WaterConfigurations[0], new Phaser.Math.Vector2(xPos, yPos), Resource);
+                            case (ResourceTileType.Potassium):
+                            {
+                                configuration = PotassiumConfigurations[0];
+                                break;
+                            }
+                            case (ResourceTileType.Water):
+                            {
+                                configuration = WaterConfigurations[0];
+                                break;
+                            }
+                        }
+
+                        // If there is no overlap with this resource pattern and another resource
+                        if (!this.DoResourcesOverlap(configuration, gridPosition))
+                        {
+                            var resourceAmount = Math.floor(Math.random() * (ResourceGenData._resourceAmountMax - ResourceGenData._resourceAmountMin) + ResourceGenData._resourceAmountMin);
+
+                            this.DrawResourceConfiguration(configuration, gridPosition, Resource, resourceAmount);
                         }
                         else
                         {
@@ -123,31 +170,6 @@ export default class MapGenerator
                     }
                 }
             })
-
-            // for (let r = 0; r < this._mapDimensions.y; ++r)
-            // {
-            //     this._grid[r] = [];
-            //     for (let c = 0; c < this._mapDimensions.x; ++c)
-            //     {
-            //         var perlinValue = this._noiseGenerator.perlin2(r * Math.random() / 100, c * Math.random() / 100);
-            //         var currentPerlinMin = 0;
-            //         let result : ResourceTile | null = null;
-            //         //console.log(perlinValue);
-
-            //         this._generationData.forEach((value, key) =>
-            //         {
-            //             var perlinMax = currentPerlinMin + value._rarity;
-                        
-            //             if (perlinValue >= currentPerlinMin && perlinValue < perlinMax)
-            //             {
-            //                 result = key;
-            //             }
-            //             currentPerlinMin = perlinMax;
-            //         })
-
-            //         this._grid[r][c] = result;
-            //     }
-            // }
         })
 
         return this._grid;
