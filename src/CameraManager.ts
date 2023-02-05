@@ -60,6 +60,14 @@ export default class CameraManager {
         this.Pan(newPos);
     }
 
+    public MoveCamera(delta: number) {
+        const newPos: Position = {
+            x: this.currentPos.x,
+            y: this.currentPos.y + delta/2
+        }
+        this.Pan(newPos);
+    }
+
     public SwapCameraPos() {
         if (!this._inOverworld) {
             this.FocusOnOverworld();
