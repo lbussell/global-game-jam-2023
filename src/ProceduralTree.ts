@@ -5,24 +5,58 @@ import { BranchSprite, LeavesSprite } from "./Assets";
 type degrees = number;
 type pixels = number;
 
-export default class ProceduralTree {
+interface LeafSprite {
+    origin: [number, number],
+    offset: number, // in rad, i guess
+    sprite: Phaser.GameObjects.Sprite
+}
 
-    private _graphics: Phaser.GameObjects.Graphics;
-    private _numTreelevels: number = 8;
-    private _segmentHeight: number = 8 * TILE_SCALE;
-    private _segmentFalloff: number = 0.90;
-    private _leafScale: number = 0.8;
+export default class ProceduralTree {
+    
+    public level: number = 0;
+
+    // these change during gameplay
+    private _branches: Phaser.GameObjects.Sprite[] = [];
+    private _leaves: LeafSprite[] = [];
+
+    // wind tuning
+    private _windTimeScale: number = 1000;
+    private _windScale: number = 10;
+    private _windMovementScale: number = 6;
+
+    // how tall the first branch/trunk segment is
+    private readonly _segmentHeight = () => 8 * TILE_SCALE * this.level * 0.5;
+    // how much progressively shorter each segment gets
+    private readonly _segmentFalloff = () => 0.90;
+
+    // how many segments to have
+    private readonly _depthIterations = () => 1 + this.level;
+    // how big to scale the leaf sprites
+    private readonly _leafScale = () => 0.4 + 0.2* this.level;
+    // how big to scale the branch sprites
+    private readonly _branchScale = (depth: number) => -(depth / this._depthIterations() * 0.5) * TILE_SCALE;
+
+    // for debugging purposes
+    private readonly _drawLeaves: boolean = true;
+    private readonly _drawBranches: boolean = true;
 
     constructor(private _scene: Phaser.Scene, x: number, y: number) {
-        this._graphics = this._scene.add.graphics();
-        // this.drawLine([WINDOW_SIZE.w/2, 0], [WINDOW_SIZE.w/2,WINDOW_SIZE.h/2-100]);
-        this.branch(
-            this._numTreelevels,
-            [WINDOW_SIZE.w / 2, 0],
-            // 10 + this.randomizeAngle(), 
-            0 + this.randomizeAngle(),
-            this._segmentHeight
-        );
+        // this.branch(
+        //     this._depthIterations(),
+        //     [WINDOW_SIZE.w / 2, 0],
+        //     // 10 + this.randomizeAngle(), 
+        //     0 + this.randomizeAngle(),
+        //     this._segmentHeight()
+        // );
+        // this.generateNewTree();
+        this.levelUp();
+    }
+
+    public levelUp() {
+        this.level += 1;
+        this.clearSprites();
+        this.generateNewTree();
+        console.log(this._leaves)
     }
 
     private line(start: [number, number], direction: degrees, length: number, level: number): [number, number] {
@@ -35,44 +69,51 @@ export default class ProceduralTree {
         return end;
     }
 
-    private randomizeAngle() {
-        return (-0.5 + Math.random()) * 25;
-    }
-
-    private randomizeLen() {
-        return (0.9 + (Math.random() * 0.2));
-    }
-
-    private branch(level: number, start: [number, number], angle: degrees, length: number) {
-        // console.log('here');
-        const end = this.line(start, angle, length, level);
-        if (level <= 0) return;
+    private branch(depth: number, start: [number, number], angle: degrees, length: number) {
+        const end = this.line(start, angle, length, depth);
+        if (depth <= 0) return;
 
         if (Math.random() < 0.8 || true) {
             this.branch(
-                level - 1,
+                depth - 1,
                 end,
                 angle - 25 + this.randomizeAngle(),
-                length * this._segmentFalloff * this.randomizeLen()
+                length * this._segmentFalloff() * this.randomizeLen()
             );
         }
 
         this.branch(
-            level - 1,
+            depth - 1,
             end,
             angle + 25 + this.randomizeAngle(),
-            length * this._segmentFalloff * this.randomizeLen()
+            length * this._segmentFalloff() * this.randomizeLen()
         );
 
         if (Math.random() < 0.7 && false) {
             this.branch(
-                level - 2, 
+                depth - 2, 
                 end,
                 // angle + 45 + this.randomizeAngle(),
                 angle + 25 + this.randomizeAngle(),
-                length * this._segmentFalloff * this.randomizeLen()
+                length * this._segmentFalloff() * this.randomizeLen()
             );
         }
+    }
+
+    public animateLeaves(t: number): void {
+        // this._windTimeScale = 
+        // const timeScale = this._windTimeScale + Math.sin(t/this._windTimeScale)*this._windTimeScale/4;
+        const timeScale = this._windTimeScale;
+        t = t/timeScale;
+        const movScale = this._windMovementScale + Math.sin(t)*this._windMovementScale/4;
+        this._leaves.forEach(leafSprite => {
+           leafSprite.sprite.setPosition(
+                leafSprite.origin[0] 
+                    + movScale * Math.sin(t + leafSprite.offset * Math.PI * 2),
+                leafSprite.origin[1]
+                    + movScale * Math.cos(t + leafSprite.offset * Math.PI * 2) / 3
+           ) 
+        });
     }
 
     private drawLine(
@@ -80,30 +121,53 @@ export default class ProceduralTree {
         end: [number, number],
         len: number,
         dir_rad: number,
-        level: number
+        depth: number
     ) {
-        // const group = this._scene.add.group({ key: BranchSprite.key, frameQuantity: 300 })
-        // const dist = Math.sqrt(
-        //     Math.pow(end[0]-start[0], 2)
-        //     + Math.pow(end[1]-start[1], 2));
-        if (level > 0) {
-            this._scene.add.sprite(start[0], start[1], BranchSprite.key)
-                .setOrigin(0.5, 0)
-                .setScale(-(level / this._numTreelevels * 0.5) * TILE_SCALE, len / 8)
-                .setRotation(dir_rad);
-        } else {
-            const midpoint = [
+        if (depth > 0 && this._drawBranches) {
+            this._branches.push(
+                this._scene.add.sprite(start[0], start[1], BranchSprite.key)
+                    .setOrigin(0.5, 0)
+                    .setScale(this._branchScale(depth), len / 8)
+                    .setRotation(dir_rad)
+            );
+        } else if (this._drawLeaves) {
+            const midpoint: [number, number] = [
                 (end[0] + start[0]) / 2,
                 (end[1] + start[1]) / 2,
             ]
-            this._scene.add.sprite(midpoint[0], midpoint[1], LeavesSprite.key)
-                .setOrigin(0.5, 0.5)
-                .setScale(this._leafScale * TILE_SCALE * this.randomizeLen())
+            const leaf: LeafSprite = {
+                sprite: this._scene.add.sprite(midpoint[0], midpoint[1], LeavesSprite.key)
+                    .setOrigin(0.5, 0.5)
+                    .setScale(this._leafScale() * TILE_SCALE * this.randomizeLen()),
+                origin: midpoint,
+                offset: Math.random()
+            }
+            this._leaves.push(leaf);
         }
+    }
 
-        // Phaser.Actions.PlaceOnLine(group.getChildren(), line);
-        // this._graphics.lineStyle(100, 0x00ff00);
-        // this._graphics.strokeLineShape(line);
-        // this._scene.
+    private clearSprites() {
+        this._leaves.forEach(s => s.sprite.destroy(true))
+        this._branches.forEach(s => s.destroy(true))
+        this._leaves = [];
+        this._branches = [];
+    }
+
+    private generateNewTree() {
+        this.branch(
+            this._depthIterations(),
+            [WINDOW_SIZE.w / 2, 0],
+            // 10 + this.randomizeAngle(), 
+            0 + this.randomizeAngle(),
+            this._segmentHeight()
+        );
+    }
+
+    private randomizeAngle() {
+        return (-0.5 + Math.random()) * 25;
+    }
+
+    private randomizeLen() {
+        return (0.9 + (Math.random() * 0.2));
     }
 }
