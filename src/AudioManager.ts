@@ -30,10 +30,14 @@ export default class AudioManager {
 
         this.aboveGround = scene.sound.get('aboveground');
         this.underGround = scene.sound.get('underground');
+        this.aboveGround.addMarker({name: 'aloop', duration: 33.39})
+        this.underGround.addMarker({name: 'uloop', duration: 33.39})
     }
 
     public playLoops() {
-        this.audioLoops.forEach(loop => loop.play());
+        this.underGround.play('uloop', { loop: true });
+        this.aboveGround.play('aloop', { loop: true });
+
     }
 
     public interpolateVolume(){
