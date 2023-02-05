@@ -106,16 +106,18 @@ export default class GameManager {
         this.resourceAmounts.potassiumRate = (this.resourceAmounts.potassium - oldPotassium)/dt;
     }
 
-    public attachTo(tile: ResourceTile) {
+    // return true if the attach was successful
+    public attachTo(tile: ResourceTile): boolean {
 
         for (let i=0; i< this.attachedResources.length; i++)
         {
             if (this.attachedResources[i].id == tile.id)
             {
-                return;
+                return false;
             }
         }
 
         this.attachedResources.push(tile);
+        return true;
     }
 }

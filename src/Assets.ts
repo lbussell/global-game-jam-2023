@@ -96,6 +96,11 @@ export const GlucoseIcon: Sprite = {
     assetLocation: "assets/icons/glucose.png"
 }
 
+export const ParticleSprite: Sprite = {
+    key: "particle",
+    assetLocation: "assets/particle.png"
+}
+
 export const AbovegroundBGM: Asset = {
     key: 'aboveground', 
     assetLocation: 'assets/audio/aboveground-final.mp3'

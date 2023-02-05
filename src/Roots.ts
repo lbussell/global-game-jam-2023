@@ -7,6 +7,7 @@ import {
 } from './Constants';
 import { RootSprites } from './Assets';
 import GameManager from "./GameManager";
+import ParticleManaager from "./ParticleManager";
 
 export default class Root {
     private _lastPoints: Phaser.Math.Vector2[];
@@ -32,7 +33,7 @@ export default class Root {
     private _leftVector = new Phaser.Math.Vector2(-1, 0);
     private _rightVector = new Phaser.Math.Vector2(1, 0);
 
-    constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager) {
+    constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager, private particleManager: ParticleManaager) {
         this._scene = scene;
         this._underground = underground;
         this._gameManager = gameManager;
@@ -310,7 +311,7 @@ export default class Root {
         let frameIdx = 0;
         while (idx < this._lastPoints.length)
         {
-            let tilePoints = [];
+            let tilePoints: Phaser.Math.Vector2[] = [];
             if (--idx < 0)
             {
                 idx = 0;
@@ -337,7 +338,9 @@ export default class Root {
 
                 if (tile != null)
                 {
-                    this._gameManager.attachTo(tile);
+                    if (this._gameManager.attachTo(tile)) {
+                        this.particleManager.explode(tilePoints[i].x, tilePoints[i].y);
+                    }
                 }
             }
 

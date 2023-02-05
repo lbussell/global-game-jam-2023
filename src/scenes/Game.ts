@@ -13,7 +13,8 @@ import {
   WaterTiles,
   PotassiumTiles,
   AbovegroundBGM,
-  UndergroundBGM
+  UndergroundBGM,
+  ParticleSprite
 } from '../Assets';
 
 import Underground from '../Underground';
@@ -23,11 +24,13 @@ import CameraManager from "../CameraManager";
 import GameManager from "../GameManager";
 import ProceduralTree from "../ProceduralTree";
 import AudioManager from "../AudioManager";
+import ParticleManaager from "../ParticleManager";
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;
   public isLoaded: boolean;
 
+  private particleManager?: ParticleManaager;
   private cameraManager?: CameraManager;
   private inputManager?: InputManager;
   private underground?: Underground;
@@ -53,6 +56,7 @@ export default class World extends Phaser.Scene {
     AssetLoader.loadSprite(this, BranchSprite)
     AssetLoader.loadSprite(this, LeavesSprite)
     AssetLoader.loadSprite(this, RootSprite);
+    AssetLoader.loadSprite(this, ParticleSprite);
     AssetLoader.loadSpriteSheet(this, TestTiles);
     AssetLoader.loadSpriteSheet(this, WaterTiles);
     AssetLoader.loadSpriteSheet(this, PotassiumTiles);
@@ -74,6 +78,7 @@ export default class World extends Phaser.Scene {
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
     this.audioManager = new AudioManager(this, ['aboveground', 'underground']);
+    this.particleManager = new ParticleManaager(this);
     this.audioManager.playLoops();
 
     this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos());
@@ -99,7 +104,7 @@ export default class World extends Phaser.Scene {
       // click stuff here
     });
 
-    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground, this.gameManager);
+    this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground, this.gameManager, this.particleManager);
 
     // Don't add anything to this function below here
     this.isLoaded = true;
