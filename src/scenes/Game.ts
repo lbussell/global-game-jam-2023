@@ -147,7 +147,7 @@ export default class World extends Phaser.Scene {
       }
 
       // Draw the grid
-      this.underground?.drawGrid();
+      this.underground?.drawGrid(this.cameraManager?.currentPos.getCenter());
 
       this.tree?.animateLeaves(time);
       //manage audio switching between above/belowground

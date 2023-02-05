@@ -5,7 +5,7 @@ export const TILE_SIZE: number = 8;
 export const TILE_SCALE: number = 3;
 export const WINDOW_SIZE: Size = { h: 200 * TILE_SCALE, w: 267 * TILE_SCALE };
 
-export const MAP_HEIGHT: number = 64;
+export const MAP_HEIGHT: number = 10000;
 export const MAP_WIDTH: number = 34;
 
 export interface Size {

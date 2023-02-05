@@ -43,7 +43,7 @@ export default class GameManager {
         // start with some fake attached resources until we actually hook them up in the game
         this.attachedResources = [
             Water(-1, 128, -1), Water(-1, 128, -1), Water(-1, 128, -1),
-            Potassium(-1, 128), Potassium(-1, 128)
+            Potassium(-1, 128, -1), Potassium(-1, 128, -1)
         ];
     }
 
