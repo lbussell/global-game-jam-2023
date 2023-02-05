@@ -12,10 +12,11 @@ import {
     Root,
     Potassium,
     TilemapLayer,
-    ResourceTile
+    ResourceTile,
+    ResourceTileType
 } from './Resources'
 
-import { TestTiles } from './Assets';
+import { TestTiles, WaterTiles } from './Assets';
 import { TilemapObject } from "./Resources";
 import  MapGenerator, { ResourceGenerationData} from "./MapGenerator";
 
@@ -42,10 +43,11 @@ export default class Underground {
         });
 
         const tiles = this._tilemap.addTilesetImage(TestTiles.key);
+        const waterTiles = this._tilemap.addTilesetImage(WaterTiles.key);
 
         const layerDirt = this._tilemap.createBlankLayer('dirt', tiles);
         const layerRoot = this._tilemap.createBlankLayer('root', tiles);
-        const layerResources = this._tilemap.createBlankLayer('resources', tiles);
+        const layerResources = this._tilemap.createBlankLayer('resources', waterTiles);
 
         layerDirt.setScale(Constants.TILE_SCALE);
         layerRoot.setScale(Constants.TILE_SCALE);
@@ -60,9 +62,9 @@ export default class Underground {
         );
 
         // initialize map generator and generate grid
-        var generationData = new Map<ResourceTile, ResourceGenerationData>();
-        generationData.set(Water(0), new ResourceGenerationData(0.05, 0.005, 1, 5));
-        generationData.set(Potassium(0), new ResourceGenerationData(0.1, 0.001, 3, 10));
+        var generationData = new Map<ResourceTileType, ResourceGenerationData>();
+        generationData.set(ResourceTileType.Water, new ResourceGenerationData(0.05, 0.005, 1, 5));
+        generationData.set(ResourceTileType.Potassium, new ResourceGenerationData(0.1, 0.001, 3, 10));
         this._undergroundMapGenerator = new MapGenerator(scene, 
             new Phaser.Math.Vector2(Constants.MAP_WIDTH, Constants.MAP_HEIGHT),
             generationData, Math.random(), 4);

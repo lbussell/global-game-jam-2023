@@ -1,24 +1,21 @@
 import Phaser, { Game, Input } from "phaser";
 import * as Constants from '../Constants';
-import {
-  Size,
-  Position,
-} from '../Constants';
-import {
-  AssetLoader,
-  Font,
-  Asset,
-  SpriteSheet,
-  Sprite,
-  TestTiles,
-  RootSprite,
-  ArcadeFont
-} from '../Assets';
+import { Position } from '../Constants';
 import Underground from '../Underground';
 import Roots from "../Roots";
 import InputManager from "../InputManager";
 import CameraManager from "../CameraManager";
 import GameManager from "../GameManager";
+import Tree from "../Tree";
+
+import {
+  AssetLoader,
+  BranchSprite,
+  LeavesSprite,
+  RootSprite,
+  TestTiles,
+  WaterTiles,
+} from '../Assets';
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;
@@ -27,7 +24,8 @@ export default class World extends Phaser.Scene {
   private cameraManager?: CameraManager;
   private inputManager?: InputManager;
   private underground?: Underground;
-  private roots?: Roots
+  private roots?: Roots;
+  private tree?: Tree;
   private clicked: integer;
   private lastGhost: number = 0;
 
@@ -43,8 +41,11 @@ export default class World extends Phaser.Scene {
   }
 
   preload() {
+    AssetLoader.loadSprite(this, BranchSprite)
+    AssetLoader.loadSprite(this, LeavesSprite)
     AssetLoader.loadSprite(this, RootSprite);
     AssetLoader.loadSpriteSheet(this, TestTiles);
+    AssetLoader.loadSpriteSheet(this, WaterTiles);
   }
 
   unload() {
@@ -74,7 +75,6 @@ export default class World extends Phaser.Scene {
         deltaY: number,
         event: Phaser.Types.Input.EventData
       ) => {
-        console.log(deltaY)
         if (deltaY > 0) {
           this.cameraManager?.MoveCameraUp();
         }
@@ -89,6 +89,9 @@ export default class World extends Phaser.Scene {
     });
 
     this.roots = new Roots(this, new Phaser.Math.Vector2(Constants.WINDOW_SIZE.w / 2 - 4, 10), this.underground);
+
+    this.tree = new Tree(this, Constants.WINDOW_SIZE.w/2, Constants.WINDOW_SIZE.h/2);
+    // this.tree.
 
     // Don't add anything to this function below here
     this.isLoaded = true;

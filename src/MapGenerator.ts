@@ -1,6 +1,13 @@
 import Phaser from "phaser";
 import Perlin from './perlin';
-import {ResourceTile, TilemapObject} from './Resources';
+import {
+    ResourceTile, 
+    TilemapObject, 
+    ResourceTileType,
+    Water,
+    Potassium,
+    WaterConfigurations
+} from './Resources';
 
 const perlinMin = -Math.sqrt(2) / 2;
 const perlinMax = -perlinMin;
@@ -24,12 +31,46 @@ export default class MapGenerator
     constructor(
         private _scene : Phaser.Scene,
         private _mapDimensions : Phaser.Math.Vector2,
-        private _generationData : Map<ResourceTile, ResourceGenerationData>,
+        private _generationData : Map<ResourceTileType, ResourceGenerationData>,
         private _seed : number,
         private _chunkSize : number
     ) {
         this._noiseGenerator = new Perlin(this._seed);
         this._grid = Array.from(Array(_mapDimensions.y), () => new Array(_mapDimensions.x).fill(null));
+    }
+
+    private IsOutOfBounds(position : Phaser.Math.Vector2)
+    {
+        if (position.x < 0 || position.x >= this._mapDimensions.x ||
+            position.y < 0 || position.y >= this._mapDimensions.y)
+        {
+            console.log(position.x, position.y);
+            return true;
+        }
+
+        return false;
+    }
+
+    private DrawResourceConfiguration(configuration : number[][], gridPosition : Phaser.Math.Vector2, resource : ResourceTileType) 
+    {
+        for (let r = 0; r < configuration.length; ++r)
+        {
+            for (let c = 0; c < configuration[r].length; ++c)
+            {
+                if (!this.IsOutOfBounds(new Phaser.Math.Vector2(gridPosition.y + r, gridPosition.x + c)))
+                {
+                    let resourceTile : ResourceTile | null = null;
+
+                    switch (resource)
+                    {
+                        case ResourceTileType.Water:
+                            resourceTile = Water(0, configuration[r][c]);
+                    }
+
+                    this._grid[gridPosition.y + r][gridPosition.x + c] = resourceTile;
+                }
+            }
+        }
     }
 
     public GenerateMap()
@@ -66,11 +107,10 @@ export default class MapGenerator
                         // Pick random tile inside chunk
                         xPos = Math.floor(Math.random() * this._chunkSize) + chunkPosition.x;
                         yPos = Math.floor(Math.random() * this._chunkSize) + chunkPosition.y;
-                        console.log(Resource.tilemapIndex)
 
                         if (this._grid[yPos][xPos] == null)
                         {
-                            this._grid[yPos][xPos] = Resource;
+                            this.DrawResourceConfiguration(WaterConfigurations[0], new Phaser.Math.Vector2(xPos, yPos), Resource);
                         }
                         else
                         {

@@ -126,7 +126,7 @@ export default class UI extends Phaser.Scene {
         return this.add.bitmapText(x, y, ArcadeFont.key, s)
             .setOrigin(originx, originy)
             .setScale(1)
-            .setFontSize(16);
+            .setFontSize(7);
     }
 
     addBitmapTextByLine(x: number, line: number, s: string): Phaser.GameObjects.BitmapText {
