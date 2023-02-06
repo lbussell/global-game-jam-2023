@@ -52,6 +52,8 @@ export default class GameManager {
     public levelUp() {
         // TODO: eat resources here
         this._tree.levelUp();
+        this.resourceAmounts.sunlightCollectionRate += 2;
+        this._photosynthesisRateMultiplier += 1;
     }
 
     public setGatherRateMultiplier(newVal: number)

@@ -61,10 +61,10 @@ export const UnlockGlassRoot = (gameManager: GameManager): ShopItem => {
 }
 
 export const UpgradeTree = (gameManager: GameManager): ShopItem => {
-    const calcSunCost = () => gameManager.treeLevel * 1;
-    const calcWaterCost = () => gameManager.treeLevel * 1;
-    const calcPotassiumCost = () => gameManager.treeLevel * 1;
-    const calcGlucoseCost = () => gameManager.treeLevel * 1
+    const calcSunCost = () => gameManager.treeLevel * 5;
+    const calcWaterCost = () => gameManager.treeLevel * 5;
+    const calcPotassiumCost = () => gameManager.treeLevel * 5;
+    const calcGlucoseCost = () => gameManager.treeLevel * 5;
 
     let sunCost = calcSunCost;
     let waterCost = calcWaterCost;
@@ -100,7 +100,7 @@ export const UpgradeTree = (gameManager: GameManager): ShopItem => {
 
 export const UnlockStretchRoot = (gameManager: GameManager): ShopItem => {
     return {
-        itemId: 2,
+        itemId: 3,
         itemName: "Stretch Root",
         itemGroup: 'roottype',
         sunCost() { return 10; },
@@ -121,7 +121,7 @@ export const UnlockStretchRoot = (gameManager: GameManager): ShopItem => {
 
 export const UpgradeRoots = (gameManager: GameManager): ShopItem => {
     return {
-        itemId: 3,
+        itemId: 4,
         level: 1,
         itemName: "Gather Faster",
         itemGroup: 'upgrade',
@@ -137,6 +137,35 @@ export const UpgradeRoots = (gameManager: GameManager): ShopItem => {
         onDeactivate() {},
         isActive: false,
         isUnlocked: false,
+        isProgressiveUpgrade: true,
         isHovered: false
     }
 }
+
+// export const GenerateGlucose = (gameManager: GameManager): ShopItem => {
+//     return {
+//         itemId: 5,
+//         level: 1,
+//         itemName: "Generate Glucose",
+//         itemGroup: 'boost',
+//         sunCost() { let max = Math.min(gameManager.resourceAmounts.glucose, gameManager.resourceAmounts.sunlight);
+//                     let i = 1;
+//                     while(Math.pow(10, i) <= max)
+//                     {
+//                         ++i;
+//                     }
+//                     console.log(Math.pow(10, i-1));
+//                     return Math.pow(10, i-1); },
+//         waterCost(){ return 0; },
+//         potassiumCost(){ return this.sunCost(); },
+//         glucoseCost(){ return 0; },
+//         onPurchase() {
+//             gameManager.resourceAmounts.glucose += this.sunCost();
+//         },
+//         onActivate() {},
+//         onDeactivate() {},
+//         isActive: false,
+//         isUnlocked: false,
+//         isHovered: false
+//     }
+// }
