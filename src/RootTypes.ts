@@ -27,7 +27,7 @@ export const GlassRoot = (): RootType => {
         waterCost: 0,
         potassiumCost: 0,
         glucoseCost: 0,
-        rootColor: 0xeeeeee,
+        rootColor: 0x9999ff,
         maxLength: 100
     }
 }
@@ -39,7 +39,7 @@ export const StretchRoot = (): RootType => {
         waterCost: 15,
         potassiumCost: 15,
         glucoseCost: 0,
-        rootColor: 0x222222,
+        rootColor: 0x999999,
         maxLength: 200
     }
 }
