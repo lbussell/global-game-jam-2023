@@ -4,6 +4,8 @@ import {
     AssetLoader,
     GlucoseIcon,
     PotassiumIcon,
+    GlassRootIcon,
+    NormalRootIcon,
     Sprite,
     SunIcon,
     WaterIcon,
@@ -72,6 +74,8 @@ export default class UI extends Phaser.Scene {
         AssetLoader.loadSprite(this, PotassiumIcon);
         AssetLoader.loadSprite(this, SunIcon);
         AssetLoader.loadSprite(this, WaterIcon);
+        AssetLoader.loadSprite(this, GlassRootIcon);
+        AssetLoader.loadSprite(this, NormalRootIcon);
     }
 
     create() {
@@ -330,6 +334,10 @@ export default class UI extends Phaser.Scene {
         .setOrigin(0, 0)
         .setFontSize(12);
         
+        let icon: Phaser.GameObjects.GameObject | undefined = undefined;
+        if (item.itemIconKey != undefined) {
+            icon = this.add.sprite(buttonX + this._shopButtonEdgeSize / 2 - 20, buttonY + this._shopButtonEdgeSize / 2 - 20, item.itemIconKey).setScale(2).setOrigin(0, 0);
+        }
 
         this._shopButtons.push(button);
         this._shopObjects.push([]);
@@ -347,6 +355,10 @@ export default class UI extends Phaser.Scene {
         this._shopObjects[this._shopObjects.length - 1].push(glucoseCost);
 
         this._shopObjects[this._shopObjects.length - 1].push(name);
+
+        if (icon != undefined) {
+            this._shopObjects[this._shopObjects.length - 1].push(icon);
+        }
     }
 
     purchaseItem(item: ShopItem): boolean {
