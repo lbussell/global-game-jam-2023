@@ -17,7 +17,8 @@ import {
   ParticleSprite,
   DiggingSFX,
   KSFX,
-  H2OSFX
+  H2OSFX,
+  LeavesSprites
 } from '../Assets';
 
 import Underground from '../Underground';
@@ -67,6 +68,7 @@ export default class World extends Phaser.Scene {
     AssetLoader.loadSpriteSheet(this, PotassiumTiles);
     AssetLoader.loadSpriteSheet(this, RootSprites);
     AssetLoader.loadSpriteSheet(this, GroundTiles);
+    AssetLoader.loadSpriteSheet(this, LeavesSprites);
 
     AssetLoader.loadAudio(this, AbovegroundBGM);
     AssetLoader.loadAudio(this, UndergroundBGM);
