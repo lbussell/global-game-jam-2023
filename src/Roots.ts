@@ -36,6 +36,9 @@ export default class Root {
     private _leftVector = new Phaser.Math.Vector2(-1, 0);
     private _rightVector = new Phaser.Math.Vector2(1, 0);
 
+
+    private _warningText: Phaser.GameObjects.Text;
+
     constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager, private particleManager: ParticleManaager, private audioManager: AudioManager) {
         this._scene = scene;
         this._underground = underground;
@@ -295,6 +298,13 @@ export default class Root {
             || this._gameManager.resourceAmounts.glucose < type.glucoseCost
             || this._gameManager.resourceAmounts.potassium < type.potassiumCost)
             {
+                if (this._warningText)
+                {
+                    this._warningText.destroy();
+                }
+                
+                this._warningText = this._scene.add.text(this._scene.input.mousePointer.x, this._scene.input.mousePointer.y, 'Not enough resources to place root');
+                this._scene.time.delayedCall(3000, () => this._warningText.destroy(), [], this);
                 return false;
             }
     
