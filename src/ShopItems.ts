@@ -75,10 +75,6 @@ export const UpgradeTree = (gameManager: GameManager): ShopItem => {
     const onPurchase = () => {
         console.log(isUnlocked);
         gameManager.levelUp();
-        sunCost = calcSunCost();
-        waterCost = calcWaterCost();
-        potassiumCost = calcPotassiumCost();
-        glucoseCost = calcGlucoseCost();
         isUnlocked = false;
         console.log(isUnlocked);
     };
