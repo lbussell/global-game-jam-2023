@@ -44,14 +44,14 @@ export default class UI extends Phaser.Scene {
     private _shopUnlockedHoverColor: number = 0x7dfab5;
     private _shopActiveColor: number = 0xc7ff5e;
 
-    private _sunText?: Phaser.GameObjects.BitmapText;
-    private _waterText?: Phaser.GameObjects.BitmapText;
-    private _potasText?: Phaser.GameObjects.BitmapText;
-    private _glucoseText?: Phaser.GameObjects.BitmapText;
-    private _sunUnderText?: Phaser.GameObjects.BitmapText;
-    private _waterUnderText?: Phaser.GameObjects.BitmapText;
-    private _potasUnderText?: Phaser.GameObjects.BitmapText;
-    private _glucoseUnderText?: Phaser.GameObjects.BitmapText;
+    private _sunText?: Phaser.GameObjects.Text;
+    private _waterText?: Phaser.GameObjects.Text;
+    private _potasText?: Phaser.GameObjects.Text;
+    private _glucoseText?: Phaser.GameObjects.Text;
+    private _sunUnderText?: Phaser.GameObjects.Text;
+    private _waterUnderText?: Phaser.GameObjects.Text;
+    private _potasUnderText?: Phaser.GameObjects.Text;
+    private _glucoseUnderText?: Phaser.GameObjects.Text;
 
     private _padding: number = 8;
 
@@ -102,7 +102,7 @@ export default class UI extends Phaser.Scene {
                 sloty(slot),
                 sprite);
 
-        const addMenuText = (slot: number, part: number, text: string): Phaser.GameObjects.BitmapText =>
+        const addMenuText = (slot: number, part: number, text: string): Phaser.GameObjects.Text =>
             this.addBitmapText(
                 menuTopLeftAnchor + this._rightRectWidthInTiles*scaledTileSize/2,
                 sloty(slot) + /* dist from slot top to text */ TILE_SCALE*18 + part * 7*TILE_SCALE,
@@ -178,15 +178,15 @@ export default class UI extends Phaser.Scene {
         return this.add.sprite(x, y, s.key).setOrigin(0, 0).setScale(TILE_SCALE);
     }
 
-    addBitmapText(x: number, y: number, s: string, originx: number = 0, originy: number = 0): Phaser.GameObjects.BitmapText {
-        return this.add.bitmapText(x, y, ArcadeFont.key, s)
+    addBitmapText(x: number, y: number, s: string, originx: number = 0, originy: number = 0): Phaser.GameObjects.Text {
+        return this.add.text(x, y, s)
             .setOrigin(originx, originy)
             .setScale(1)
             .setFontSize(TILE_SCALE * 6);
     }
 
-    addBitmapTextByLine(x: number, line: number, s: string): Phaser.GameObjects.BitmapText {
-        return this.add.bitmapText(x+4, 600-(32*line)-4, ArcadeFont.key, s).setOrigin(0, 1).setScale(1);
+    addBitmapTextByLine(x: number, line: number, s: string): Phaser.GameObjects.Text {
+        return this.add.text(x+4, 600-(32*line)-4, s).setOrigin(0, 1).setScale(1);
     }
 
     formatTimeString(t: number): string {

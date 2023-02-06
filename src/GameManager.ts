@@ -34,9 +34,9 @@ export default class GameManager {
         this.resourceAmounts = {
             sunlight: 0,
             sunlightCollectionRate: 2,
-            water: 20,
+            water: 100,
             waterRate: 0,
-            potassium: 20,
+            potassium: 100,
             potassiumRate: 0,
             glucose: 0,
             glucoseRate: 0
@@ -58,7 +58,7 @@ export default class GameManager {
 
     public setGatherRateMultiplier(newVal: number)
     {
-        this._gatherRateMultiplier = number;
+        this._gatherRateMultiplier = newVal;
     }
 
     public updateAttachedResources(dt: number) {
