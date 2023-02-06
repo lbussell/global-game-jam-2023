@@ -302,7 +302,7 @@ export default class Root {
                     this._warningText.destroy();
                 }
                 
-                this._warningText = this._scene.add.text(this._scene.input.mousePointer.x, this._scene.input.mousePointer.y, 'Not enough resources to place root');
+                this._warningText = this._scene.add.text(this._scene.input.mousePointer.worldX, this._scene.input.mousePointer.worldY, 'Not enough resources to place root');
                 this._scene.time.delayedCall(3000, () => this._warningText.destroy(), [], this);
                 return false;
             }
@@ -352,7 +352,6 @@ export default class Root {
 
                 if (tile != null && type.rootType != 1)
                 {
-                    console.log(tile);
                     if (this._gameManager.attachTo(tile)) {
                         this.particleManager.explode(tilePoints[i].x, tilePoints[i].y);
                         if(tile.type === 'potassium'){

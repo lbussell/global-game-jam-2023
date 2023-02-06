@@ -58,8 +58,6 @@ export default class Start extends Phaser.Scene {
         var ypos = inity + a * Math.sin(2 * Math.PI * time * 0.001)
         //var ypos = inity - time * .1;
         var xpos = 0.5 * WINDOW_SIZE.w;
-        console.log(xpos);
-        console.log(ypos);
         this._titleSprite?.setPosition(xpos, ypos);
     }
 }
