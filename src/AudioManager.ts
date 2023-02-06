@@ -8,8 +8,8 @@ export default class AudioManager {
     private audioLoops: Phaser.Sound.BaseSound[] = [];
     private groundLevelScrollValue: number;
 
-    private aboveGround: Phaser.Sound.BaseSound;
-    private underGround: Phaser.Sound.BaseSound;
+    private aboveGround: Phaser.Sound.BaseSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    private underGround: Phaser.Sound.BaseSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
 
     private paused: boolean = false;
 
