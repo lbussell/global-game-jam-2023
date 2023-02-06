@@ -34,9 +34,9 @@ export default class GameManager {
         this.resourceAmounts = {
             sunlight: 0,
             sunlightCollectionRate: 2,
-            water: 0,
+            water: 20,
             waterRate: 0,
-            potassium: 0,
+            potassium: 20,
             potassiumRate: 0,
             glucose: 0,
             glucoseRate: 0
