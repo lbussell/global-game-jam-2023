@@ -33,6 +33,7 @@ export default class UI extends Phaser.Scene {
     private _shopButtonSpacing: number = 5;
     private _shopButtonEdgeSize: number = 100;
     private _shopButtons: Phaser.GameObjects.Rectangle[];
+    private _shopObjects: Phaser.GameObjects.GameObject [][];
 
     private _shopItems: ShopItem[];
 
@@ -60,6 +61,7 @@ export default class UI extends Phaser.Scene {
         this._isShopShowing = false;
         this._shopButtons = [];
         this._shopItems = [];
+        this._shopObjects = [];
         Phaser.Scene.call(this, { key: "UIScene", active: true });
     }
 
@@ -235,9 +237,12 @@ export default class UI extends Phaser.Scene {
         let row = Math.floor(this._shopButtons.length / (this._shopButtonEdgeSize + this._shopButtonSpacing));
         let column = this._shopButtons.length % (this._shopButtonEdgeSize + this._shopButtonSpacing);
 
+        let buttonX = this._shopButtonSpacing + this._shopEdgeOffset + column * (this._shopButtonEdgeSize + this._shopButtonSpacing);
+        let buttonY = this._shopButtonSpacing + this._shopEdgeOffset + row * (this._shopButtonEdgeSize + this._shopButtonSpacing);
+
         let button = this.add.rectangle(
-            this._shopButtonSpacing + this._shopEdgeOffset + column * (this._shopButtonEdgeSize + this._shopButtonSpacing),
-            this._shopButtonSpacing + this._shopEdgeOffset + row * (this._shopButtonEdgeSize + this._shopButtonSpacing),
+            buttonX,
+            buttonY,
             this._shopButtonEdgeSize,
             this._shopButtonEdgeSize,
             this._shopLockedUnafforableColor
@@ -286,7 +291,55 @@ export default class UI extends Phaser.Scene {
             
         });
 
+        let costIconSpacing = (this._shopButtonEdgeSize - 10) / 4;
+
+
+        let sunSprite = this.add.sprite(buttonX + 5, buttonY + this._shopButtonEdgeSize - 35, SunIcon.key).setOrigin(0, 0);
+        let waterSprite = this.add.sprite(buttonX + 5 + costIconSpacing, buttonY + this._shopButtonEdgeSize - 35, WaterIcon.key).setOrigin(0, 0);
+        let potassiumSprite = this.add.sprite(buttonX + 5 + costIconSpacing*2, buttonY + this._shopButtonEdgeSize - 35, PotassiumIcon.key).setOrigin(0, 0);
+        let glucoseSprite = this.add.sprite(buttonX + 5 + costIconSpacing*3, buttonY + this._shopButtonEdgeSize - 35, GlucoseIcon.key).setOrigin(0, 0);
+
+        let sunCost = this.add.text(buttonX + 10, buttonY + this._shopButtonEdgeSize - 15, item.sunCost.toString())
+            .setOrigin(0, 0)
+            .setScale(1)
+            .setFontSize(12);
+
+        let waterCost = this.add.text(buttonX + 10 + costIconSpacing, buttonY + this._shopButtonEdgeSize - 15, item.waterCost.toString())
+            .setOrigin(0, 0)
+            .setScale(1)
+            .setFontSize(12);
+
+        let potassiumCost = this.add.text(buttonX + 10 + costIconSpacing*2, buttonY + this._shopButtonEdgeSize - 15, item.potassiumCost.toString())
+            .setOrigin(0, 0)
+            .setScale(1)
+            .setFontSize(12);
+
+        let glucoseCost = this.add.text(buttonX + 10 + costIconSpacing*3, buttonY + this._shopButtonEdgeSize - 15, item.glucoseCost.toString())
+            .setOrigin(0, 0)
+            .setScale(1)
+            .setFontSize(12);
+
+        let name = this.add.text(buttonX + 10, buttonY + 10, item.itemName.toString(), {align: "center"})
+        .setOrigin(0, 0)
+        .setFontSize(12);
+        
+
         this._shopButtons.push(button);
+        this._shopObjects.push([]);
+
+        this._shopObjects[this._shopObjects.length - 1].push(button);
+
+        this._shopObjects[this._shopObjects.length - 1].push(sunSprite);
+        this._shopObjects[this._shopObjects.length - 1].push(waterSprite);
+        this._shopObjects[this._shopObjects.length - 1].push(potassiumSprite);
+        this._shopObjects[this._shopObjects.length - 1].push(glucoseSprite);
+
+        this._shopObjects[this._shopObjects.length - 1].push(sunCost);
+        this._shopObjects[this._shopObjects.length - 1].push(waterCost);
+        this._shopObjects[this._shopObjects.length - 1].push(potassiumCost);
+        this._shopObjects[this._shopObjects.length - 1].push(glucoseCost);
+
+        this._shopObjects[this._shopObjects.length - 1].push(name);
     }
 
     purchaseItem(item: ShopItem): boolean {
@@ -344,8 +397,10 @@ export default class UI extends Phaser.Scene {
     hideShop(): void {
         this._shopMenuRect?.destroy();
 
-        this._shopButtons.forEach(button => {
-            button.destroy();
+        this._shopObjects.forEach(objectSet => {
+            objectSet.forEach(obj => {
+                obj.destroy();
+            })
         });
 
         this._shopButtons = [];
