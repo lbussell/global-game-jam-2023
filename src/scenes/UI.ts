@@ -300,22 +300,22 @@ export default class UI extends Phaser.Scene {
         let potassiumSprite = this.add.sprite(buttonX + 5 + costIconSpacing*2, buttonY + this._shopButtonEdgeSize - 35, PotassiumIcon.key).setOrigin(0, 0);
         let glucoseSprite = this.add.sprite(buttonX + 5 + costIconSpacing*3, buttonY + this._shopButtonEdgeSize - 35, GlucoseIcon.key).setOrigin(0, 0);
 
-        let sunCost = this.add.text(buttonX + 10, buttonY + this._shopButtonEdgeSize - 15, item.sunCost.toString())
+        let sunCost = this.add.text(buttonX + 10, buttonY + this._shopButtonEdgeSize - 15, item.sunCost().toString())
             .setOrigin(0, 0)
             .setScale(1)
             .setFontSize(12);
 
-        let waterCost = this.add.text(buttonX + 10 + costIconSpacing, buttonY + this._shopButtonEdgeSize - 15, item.waterCost.toString())
+        let waterCost = this.add.text(buttonX + 10 + costIconSpacing, buttonY + this._shopButtonEdgeSize - 15, item.waterCost().toString())
             .setOrigin(0, 0)
             .setScale(1)
             .setFontSize(12);
 
-        let potassiumCost = this.add.text(buttonX + 10 + costIconSpacing*2, buttonY + this._shopButtonEdgeSize - 15, item.potassiumCost.toString())
+        let potassiumCost = this.add.text(buttonX + 10 + costIconSpacing*2, buttonY + this._shopButtonEdgeSize - 15, item.potassiumCost().toString())
             .setOrigin(0, 0)
             .setScale(1)
             .setFontSize(12);
 
-        let glucoseCost = this.add.text(buttonX + 10 + costIconSpacing*3, buttonY + this._shopButtonEdgeSize - 15, item.glucoseCost.toString())
+        let glucoseCost = this.add.text(buttonX + 10 + costIconSpacing*3, buttonY + this._shopButtonEdgeSize - 15, item.glucoseCost().toString())
             .setOrigin(0, 0)
             .setScale(1)
             .setFontSize(12);
@@ -345,18 +345,18 @@ export default class UI extends Phaser.Scene {
 
     purchaseItem(item: ShopItem): boolean {
         // Verify resources
-        if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost
-            || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost
-            || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost
-            || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost)
+        if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost()
+            || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost()
+            || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost()
+            || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost())
             {
                 return false;
             }
         
-        this._gameScene!!.gameManager!!.resourceAmounts.sunlight -= item.sunCost;
-        this._gameScene!!.gameManager!!.resourceAmounts.glucose -= item.glucoseCost;
-        this._gameScene!!.gameManager!!.resourceAmounts.potassium -= item.potassiumCost;
-        this._gameScene!!.gameManager!!.resourceAmounts.water -= item.waterCost;
+        this._gameScene!!.gameManager!!.resourceAmounts.sunlight -= item.sunCost();
+        this._gameScene!!.gameManager!!.resourceAmounts.glucose -= item.glucoseCost();
+        this._gameScene!!.gameManager!!.resourceAmounts.potassium -= item.potassiumCost();
+        this._gameScene!!.gameManager!!.resourceAmounts.water -= item.waterCost();
 
         return true;
     }
@@ -376,10 +376,10 @@ export default class UI extends Phaser.Scene {
             }
         }
         else {
-            if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost
-                || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost
-                || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost
-                || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost)
+            if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost()
+                || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost()
+                || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost()
+                || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost())
                 {
                     itemButton.fillColor = this._shopLockedUnafforableColor;
                 }
