@@ -336,7 +336,6 @@ export default class Root {
 
                 if (tile != null)
                 {
-                    console.log(tile);
                     if (this._gameManager.attachTo(tile)) {
                         this.particleManager.explode(tilePoints[i].x, tilePoints[i].y);
                         if(tile.type === 'potassium'){
