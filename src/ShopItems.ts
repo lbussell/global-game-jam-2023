@@ -3,6 +3,7 @@ import { GlassRoot, NormalRoot, RootType } from "./RootTypes";
 
 export interface ShopItem {
     itemId: number,             // Id
+    itemName: string,           // Item name in the shop
     itemGroup: string,          // Group name, other items in this group will be deactivated when this is activated
     sunCost: number,            // Sun cost to purchase
     waterCost: number,          // Water cost to purchase
@@ -19,6 +20,7 @@ export interface ShopItem {
 export const ActivateNormalRoot = (gameManager: GameManager): ShopItem => {
     return {
         itemId: 0,
+        itemName: "Normal Root",
         itemGroup: 'roottype',
         sunCost: 0,
         waterCost: 0,
@@ -38,6 +40,7 @@ export const ActivateNormalRoot = (gameManager: GameManager): ShopItem => {
 export const UnlockGlassRoot = (gameManager: GameManager): ShopItem => {
     return {
         itemId: 1,
+        itemName: "Glass Root",
         itemGroup: 'roottype',
         sunCost: 0,
         waterCost: 10,

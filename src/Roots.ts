@@ -23,7 +23,7 @@ export default class Root {
     private _ghostRopes: Phaser.GameObjects.Rope[] = [];
     private _ghostPoints: Phaser.Math.Vector2[];
     private _ghostOkColor = Phaser.Display.Color.GetColor32(75, 180, 180, 150);
-    private _ghostInvalidColor = Phaser.Display.Color.GetColor32(180, 75, 75, 150);
+    private _ghostInvalidColor = Phaser.Display.Color.GetColor32(200, 50, 50, 150);
     private _currentFrames: number[] = [];
 
     private _growthDistance = 32 / 3 * Constants.TILE_SCALE;
@@ -358,7 +358,7 @@ export default class Root {
 
         for (let i=0; i<this._maxGhosts; i++)
         {
-            this._currentFrames.push(Phaser.Math.Between(0, 7));
+            this._currentFrames.push(Phaser.Math.Between(0, 3));
         }
 
         // Subtract cost
