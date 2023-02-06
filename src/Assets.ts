@@ -121,6 +121,11 @@ export const StartBackground: Asset = {
     assetLocation: 'assets/startscreen.png'
 }
 
+export const GameTitle: Asset = {
+    key: 'gametitleimage',
+    assetLocation: 'assets/becometreetitle.png'
+}
+
 export const AssetLoader = {
     loadFont: (scene: Phaser.Scene, font: Font) =>
         scene.load.bitmapFont(
