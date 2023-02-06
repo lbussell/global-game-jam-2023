@@ -44,7 +44,6 @@ export default class Root {
         this._lastPoints.push(position);
         this._lastPoints.push(position.clone().add(new Phaser.Math.Vector2(0, this._growthDistance)));
         this._lastPoints.push(position.clone().add(new Phaser.Math.Vector2(0, this._growthDistance*2)));
-        this._lastPoints.push(position.clone().add(new Phaser.Math.Vector2(0, this._growthDistance*3)));
 
         // Track all points in the "full" rope
         this._allPoints = [];
@@ -296,9 +295,9 @@ export default class Root {
             {
                 return false;
             }
-
-        console.log("Cost " + type.sunCost + " (" + this._gameManager.resourceAmounts.sunlight + ")");
     
+        console.log("Create with type " + type.rootType);
+
         // Insert new point
         this._lastPoints = this._ghostPoints;
         this._allPoints = this._allPoints.concat(this._lastPoints);

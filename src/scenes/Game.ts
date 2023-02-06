@@ -23,11 +23,12 @@ import CameraManager from "../CameraManager";
 import GameManager from "../GameManager";
 import ProceduralTree from "../ProceduralTree";
 import AudioManager from "../AudioManager";
-import { NormalRoot, GlassRoot, RootType } from "../RootTypes";
+import { NormalRoot } from "../RootTypes";
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;
   public isLoaded: boolean;
+  public blockPlacement: boolean;
 
   private cameraManager?: CameraManager;
   private inputManager?: InputManager;
@@ -36,7 +37,6 @@ export default class World extends Phaser.Scene {
   private tree?: ProceduralTree;
   private clicked: integer;
   private lastGhost: number = 0;
-  private activeRootType: RootType = NormalRoot();
 
   private timeText?: Phaser.GameObjects.BitmapText;
 
@@ -46,6 +46,7 @@ export default class World extends Phaser.Scene {
     super("GameScene");
     this.isLoaded = false;
     this.clicked = 0;
+    this.blockPlacement = false;
 
     // stuff that will be loaded in create()
     this.timeText = undefined;
@@ -77,6 +78,7 @@ export default class World extends Phaser.Scene {
     this.underground = new Underground(this, this.cameras.main);
     this.audioManager = new AudioManager(this, ['aboveground', 'underground']);
     this.audioManager.playLoops();
+
     this.input.keyboard.on('keydown-M', () => this.audioManager?.toggleMuteAll());
 
     this.inputManager.tabKey.on('up', () => this.cameraManager?.SwapCameraPos());
@@ -122,20 +124,20 @@ export default class World extends Phaser.Scene {
 
       if (this.input.manager.activePointer.isDown)
       {
-        if (this.clicked + 300 < time )
+        if (this.clicked + 300 < time && !this.blockPlacement)
         {
-          this.roots?.createGhost(worldPoint, this.activeRootType);
+          this.roots?.createGhost(worldPoint, this.gameManager?.activeRootType ?? NormalRoot());
           this.clicked = time;
         }
         else if (this.lastGhost + 50 < time)
         {
-          this.roots?.findAndDrawBestGhost(worldPoint, this.activeRootType);
+          this.roots?.findAndDrawBestGhost(worldPoint, this.gameManager?.activeRootType ?? NormalRoot());
           this.lastGhost = time;
         }
       }
       else if (this.lastGhost + 50 < time)
       {
-        this.roots?.findAndDrawBestGhost(worldPoint, this.activeRootType);
+        this.roots?.findAndDrawBestGhost(worldPoint, this.gameManager?.activeRootType ?? NormalRoot());
         this.lastGhost = time;
       }
 
