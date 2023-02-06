@@ -60,8 +60,8 @@ export const LeavesSprite: Sprite = {
 
 export const ArcadeFont: Font = {
     key: "arcadeFont",
-    assetLocation: "assets/fonts/arcade.png",
-    xmlLocation: "assets/fonts/arcade.xml"
+    assetLocation: "assets/fonts/gem.png",
+    xmlLocation: "assets/fonts/gem.xml"
 }
 
 export const RootSprite: Sprite = {
@@ -119,6 +119,21 @@ export const DiggingSFX: Asset = {
 export const StartBackground: Asset = {
     key: 'startbackground',
     assetLocation: 'assets/startscreen.png'
+}
+
+export const GameTitle: Asset = {
+    key: 'gametitleimage',
+    assetLocation: 'assets/becometreetitle.png'
+}
+
+export const KSFX: Asset = {
+    key: 'kSFX', 
+    assetLocation: 'assets/audio/kpop.ogg'
+}
+
+export const H2OSFX: Asset = {
+    key: 'h2oSFX', 
+    assetLocation: 'assets/audio/waterpop.ogg'
 }
 
 export const AssetLoader = {

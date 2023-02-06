@@ -9,6 +9,7 @@ import { RootSprites } from './Assets';
 import GameManager from "./GameManager";
 import ParticleManaager from "./ParticleManager";
 import { RootType, NormalRoot, GlassRoot, RootTypes } from "./RootTypes";
+import AudioManager from "./AudioManager";
 
 export default class Root {
     private _lastPoints: Phaser.Math.Vector2[];
@@ -35,7 +36,7 @@ export default class Root {
     private _leftVector = new Phaser.Math.Vector2(-1, 0);
     private _rightVector = new Phaser.Math.Vector2(1, 0);
 
-    constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager, private particleManager: ParticleManaager) {
+    constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager, private particleManager: ParticleManaager, private audioManager: AudioManager) {
         this._scene = scene;
         this._underground = underground;
         this._gameManager = gameManager;
@@ -45,7 +46,6 @@ export default class Root {
         this._lastPoints.push(position);
         this._lastPoints.push(position.clone().add(new Phaser.Math.Vector2(0, this._growthDistance)));
         this._lastPoints.push(position.clone().add(new Phaser.Math.Vector2(0, this._growthDistance*2)));
-        this._lastPoints.push(position.clone().add(new Phaser.Math.Vector2(0, this._growthDistance*3)));
 
         // Track all points in the "full" rope
         this._allPoints = [];
@@ -307,9 +307,9 @@ export default class Root {
             {
                 return false;
             }
-
-        console.log("Cost " + type.sunCost + " (" + this._gameManager.resourceAmounts.sunlight + ")");
     
+        console.log("Create with type " + type.rootType);
+
         // Insert new point
         this._lastPoints = this._ghostPoints;
         this._allPoints = this._allPoints.concat(this._lastPoints);
@@ -346,10 +346,19 @@ export default class Root {
 
                 if (tile != null)
                 {
+                    console.log(tile);
                     if (this._gameManager.attachTo(tile, type)) {
                         this.particleManager.explode(tilePoints[i].x, tilePoints[i].y);
+                        if(tile.type === 'potassium'){
+                            this.audioManager.playSFX('kSFX');
+                        }
+                        else if (tile.type === 'water'){
+                            this.audioManager.playSFX('h2oSFX');
+                        }
                     }
+                    
                 }
+                this.audioManager.playSFX('digSFX');
             }
 
             this._allRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false));
