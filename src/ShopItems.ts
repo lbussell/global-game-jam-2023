@@ -61,10 +61,10 @@ export const UnlockGlassRoot = (gameManager: GameManager): ShopItem => {
 }
 
 export const UpgradeTree = (gameManager: GameManager): ShopItem => {
-    const calcSunCost = () => gameManager.treeLevel * 1;
-    const calcWaterCost = () => gameManager.treeLevel * 1;
-    const calcPotassiumCost = () => gameManager.treeLevel * 1;
-    const calcGlucoseCost = () => gameManager.treeLevel * 1
+    const calcSunCost = () => gameManager.treeLevel * 10;
+    const calcWaterCost = () => gameManager.treeLevel * 10;
+    const calcPotassiumCost = () => gameManager.treeLevel * 10;
+    const calcGlucoseCost = () => gameManager.treeLevel * 10;
 
     let sunCost = calcSunCost;
     let waterCost = calcWaterCost;
