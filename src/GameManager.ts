@@ -54,6 +54,11 @@ export default class GameManager {
         this._tree.levelUp();
     }
 
+    public setGatherRateMultiplier(newVal: number)
+    {
+        this._gatherRateMultiplier = number;
+    }
+
     public updateAttachedResources(dt: number) {
         dt = dt/1000;
 
