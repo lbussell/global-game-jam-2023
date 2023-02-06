@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import ProceduralTree from './ProceduralTree';
 import { ResourceTile, ResourceTileType, Water, Potassium } from './Resources';
-import { NormalRoot, GlassRoot, RootType } from "./RootTypes";
+import { NormalRoot, GlassRoot, RootType, RootTypes } from './RootTypes';
 
 export interface ResourceAmounts {
     sunlight: number,
@@ -10,6 +10,7 @@ export interface ResourceAmounts {
     waterRate: number,
     potassium: number,
     potassiumRate: number,
+    bonusPotassiumRate : number
     glucose: number,
     glucoseRate: number
 }
@@ -38,6 +39,7 @@ export default class GameManager {
             waterRate: 0,
             potassium: 100,
             potassiumRate: 0,
+            bonusPotassiumRate: 0,
             glucose: 0,
             glucoseRate: 0
         }
@@ -71,7 +73,6 @@ export default class GameManager {
         // grab resources from the ground
         this.attachedResources.forEach(r => {
             if (r.resourceQuantity > 0) {
-
                 let toAdd = 
                     r.ratePerSec
                     * this._gatherRateMultiplier
@@ -103,6 +104,8 @@ export default class GameManager {
         let photosynthesisAmt = this._basePhotosynthesisRate * this._photosynthesisRateMultiplier * dt;
         photosynthesisAmt = Math.min(this.resourceAmounts.sunlight, photosynthesisAmt);
 
+        this.resourceAmounts.potassium += this.resourceAmounts.bonusPotassiumRate * dt;
+
         // convert sunlight into glucose via photosynthesis
         this.resourceAmounts.glucose += photosynthesisAmt;
         this.resourceAmounts.sunlight -= photosynthesisAmt;
@@ -114,7 +117,12 @@ export default class GameManager {
     }
 
     // return true if the attach was successful
-    public attachTo(tile: ResourceTile): boolean {
+    public attachTo(tile: ResourceTile, rootType : RootType): boolean {
+
+        if (rootType.rootType == RootTypes.Glass)
+        {
+            return false;
+        }
 
         for (let i=0; i< this.attachedResources.length; i++)
         {
@@ -122,6 +130,12 @@ export default class GameManager {
             {
                 return false;
             }
+        }
+
+        if (rootType.rootType == RootTypes.Efficient)
+        {
+            tile.ratePerSec /= 2;
+            tile.resourceQuantity *= 2;
         }
 
         this.attachedResources.push(tile);

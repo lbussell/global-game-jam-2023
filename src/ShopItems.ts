@@ -1,5 +1,5 @@
 import GameManager from "./GameManager";
-import { GlassRoot, NormalRoot, StretchRoot } from "./RootTypes";
+import { BulbRoot, EfficientRoot, GlassRoot, NormalRoot, RootType, SoilRoot, StretchRoot } from "./RootTypes";
 
 export interface ShopItem {
     itemId: number,             // Id
@@ -44,9 +44,9 @@ export const UnlockGlassRoot = (gameManager: GameManager): ShopItem => {
         itemId: 1,
         itemName: "Glass Root",
         itemGroup: 'roottype',
-        sunCost() { return 0; },
-        waterCost(){ return 10; },
-        potassiumCost(){ return 10; },
+        sunCost() { return 50; },
+        waterCost(){ return 0; },
+        potassiumCost(){ return 0; },
         glucoseCost(){ return 0; },
         onPurchase() {},
         onActivate() {
@@ -56,6 +56,63 @@ export const UnlockGlassRoot = (gameManager: GameManager): ShopItem => {
         isActive: false,
         isUnlocked: false,
         isProgressiveUpgrade: false,
+        isHovered: false
+    }
+}
+
+export const UnlockBulbRoot = (gameManager: GameManager): ShopItem => {
+    return {
+        itemId: 2,
+        itemGroup: 'roottype',
+        sunCost: 0,
+        waterCost: 0,
+        potassiumCost: 0,
+        glucoseCost: 0,
+        onPurchase() {},
+        onActivate() {
+            gameManager.activeRootType = BulbRoot();
+        },
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: false,
+        isHovered: false
+    }
+}
+
+export const UnlockSoilRoot = (gameManager: GameManager): ShopItem => {
+    return {
+        itemId: 4,
+        itemGroup: 'roottype',
+        sunCost: 0,
+        waterCost: 0,
+        potassiumCost: 0,
+        glucoseCost: 0,
+        onPurchase() {},
+        onActivate() {
+            gameManager.activeRootType = SoilRoot();
+        },
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: false,
+        isHovered: false
+    }
+}
+
+export const UnlockEfficientRoot = (gameManager: GameManager): ShopItem => {
+    return {
+        itemId: 5,
+        itemGroup: 'roottype',
+        sunCost: 0,
+        waterCost: 0,
+        potassiumCost: 0,
+        glucoseCost: 0,
+        onPurchase() {},
+        onActivate() {
+            gameManager.activeRootType = EfficientRoot();
+        },
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: false,
         isHovered: false
     }
 }

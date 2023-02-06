@@ -28,8 +28,8 @@ import CameraManager from "../CameraManager";
 import GameManager from "../GameManager";
 import ProceduralTree from "../ProceduralTree";
 import AudioManager from "../AudioManager";
-import { NormalRoot } from "../RootTypes";
-import ParticleManaager from "../ParticleManager";
+import { NormalRoot, RootType } from "../RootTypes";
+import ParticleManaager from "../ParticleManager"
 
 export default class World extends Phaser.Scene {
   public gameManager?: GameManager;

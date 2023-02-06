@@ -86,8 +86,8 @@ export default class Underground {
 
         // initialize map generator and generate grid
         var generationData = new Map<ResourceTileType, ResourceGenerationData>();
-        generationData.set(ResourceTileType.Water, new ResourceGenerationData(0.05, 0.005, 1, 5));
-        generationData.set(ResourceTileType.Potassium, new ResourceGenerationData(0.1, 0.001, 3, 10));
+        generationData.set(ResourceTileType.Water, new ResourceGenerationData(0.05, 0.005, 10, 20));
+        generationData.set(ResourceTileType.Potassium, new ResourceGenerationData(0.1, 0.001, 20, 40));
 
         this._undergroundMapGenerator = new MapGenerator(scene, 
             new Phaser.Math.Vector2(Constants.MAP_WIDTH, Constants.MAP_HEIGHT),

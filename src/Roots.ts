@@ -8,12 +8,13 @@ import {
 import { RootSprites } from './Assets';
 import GameManager from "./GameManager";
 import ParticleManaager from "./ParticleManager";
-import { RootType, NormalRoot, GlassRoot } from "./RootTypes";
+import { RootType, NormalRoot, GlassRoot, RootTypes } from "./RootTypes";
 import AudioManager from "./AudioManager";
 
 export default class Root {
     private _lastPoints: Phaser.Math.Vector2[];
     private _allPoints: Phaser.Math.Vector2[];
+    private _allPointsTypes : RootTypes[];
     private _scene: Phaser.Scene;
     private _underground: Underground;
     private _gameManager: GameManager;
@@ -53,6 +54,9 @@ export default class Root {
         this._allPoints = [];
         this._allPoints = this._allPoints.concat(this._lastPoints);
 
+        this._allPointsTypes = new Array(this._allPoints.length).fill(RootTypes.Normal);
+
+
         this._ghostPoints = [];
 
         for (let i=0; i<200; i++)
@@ -69,6 +73,11 @@ export default class Root {
         if (this._allPoints.length < 1)
         {
             return false;
+        }
+
+        if (type.rootType == RootTypes.Stretch)
+        {
+            this._maxGhosts *= 2;
         }
 
         let closestPointIndexes: number[] = [];
@@ -112,7 +121,7 @@ export default class Root {
         for (let j=1; j<closestPointIndexes.length; j++)
         {
             let i = closestPointIndexes[j];
-            if (i == -1)
+            if (i == -1 || this._allPointsTypes[i] == RootTypes.Bulb)
             {
                 continue;
             }
@@ -140,6 +149,11 @@ export default class Root {
         }
 
         this.drawGhost(bestPoints, type);
+
+        if (type.rootType == RootTypes.Stretch)
+        {
+            this._maxGhosts /= 2;
+        }
 
         return true;
     }
@@ -312,6 +326,8 @@ export default class Root {
         // Insert new point
         this._lastPoints = this._ghostPoints;
         this._allPoints = this._allPoints.concat(this._lastPoints);
+        var newTypeArray = new Array(this._lastPoints.length).fill(type);
+        this._allPointsTypes.concat(newTypeArray);
 
         // Draw rope using the current point set
         let idx = 0;
@@ -352,7 +368,7 @@ export default class Root {
 
                 if (tile != null && type.rootType != 1)
                 {
-                    if (this._gameManager.attachTo(tile)) {
+                    if (this._gameManager.attachTo(tile, type)) {
                         this.particleManager.explode(tilePoints[i].x, tilePoints[i].y);
                         if(tile.type === 'potassium'){
                             this.audioManager.playSFX('kSFX');
@@ -379,6 +395,12 @@ export default class Root {
         for (let i=0; i<type.maxLength; i++)
         {
             this._currentFrames.push(Phaser.Math.Between(0, 3));
+        }
+
+        if (type.rootType == RootTypes.Soil)
+        {
+            this._gameManager.resourceAmounts.bonusPotassiumRate += 20;
+            console.log("place soil root")
         }
 
         // Subtract cost
