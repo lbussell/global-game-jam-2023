@@ -45,7 +45,7 @@ export default class GameManager {
         // start with some fake attached resources until we actually hook them up in the game
         this.attachedResources = [
             Water(-1, 128, -1), Water(-1, 128, -1), Water(-1, 128, -1),
-            Potassium(-1, 128), Potassium(-1, 128)
+            Potassium(-1, 128, -1), Potassium(-1, 128, -1)
         ];
     }
 
@@ -106,16 +106,18 @@ export default class GameManager {
         this.resourceAmounts.potassiumRate = (this.resourceAmounts.potassium - oldPotassium)/dt;
     }
 
-    public attachTo(tile: ResourceTile) {
+    // return true if the attach was successful
+    public attachTo(tile: ResourceTile): boolean {
 
         for (let i=0; i< this.attachedResources.length; i++)
         {
             if (this.attachedResources[i].id == tile.id)
             {
-                return;
+                return false;
             }
         }
 
         this.attachedResources.push(tile);
+        return true;
     }
 }

@@ -1,11 +1,5 @@
-import * as Constants from './Constants';
-
-//constants for logistic func
-const X0 = 0;
-const k = 1; //steepness
-
-const m = 0.005;
-const DEPTH_OFFSET = 100;
+const m = 0.002;
+const DEPTH_OFFSET = 500;
 
 export default class AudioManager {
     public _camera: Phaser.Cameras.Scene2D.Camera;
@@ -19,7 +13,7 @@ export default class AudioManager {
 
     private paused: boolean = false;
 
-    constructor(scene: Phaser.Scene, loopsToAdd: string[]){
+    constructor(scene: Phaser.Scene, loopsToAdd: string[], sfxToAdd: string[]){
         this._camera = scene.cameras.main;
         this._scene = scene;
         this.groundLevelScrollValue = scene.cameras.main.scrollY;
@@ -27,13 +21,22 @@ export default class AudioManager {
             assetKey => {
                 this.audioLoops.push(scene.sound.add(assetKey, { loop: true }));
             });
+        sfxToAdd.forEach(
+            assetKey => {
+                scene.sound.add(assetKey)
+            }
+        )
 
         this.aboveGround = scene.sound.get('aboveground');
         this.underGround = scene.sound.get('underground');
+        this.aboveGround.addMarker({name: 'aloop', duration: 33.39})
+        this.underGround.addMarker({name: 'uloop', duration: 33.39})
     }
 
     public playLoops() {
-        this.audioLoops.forEach(loop => loop.play());
+        this.underGround.play('uloop', { loop: true });
+        this.aboveGround.play('aloop', { loop: true });
+
     }
 
     public interpolateVolume(){
@@ -46,6 +49,11 @@ export default class AudioManager {
     public toggleMuteAll() {
         this.paused ? this.audioLoops.forEach(loop => loop.resume()) : this.audioLoops.forEach(loop => loop.pause());
         this.paused = !this.paused;
+    }
+
+    public playSFX(name: string){
+        const sound = this._scene.sound.get(name);
+        sound.play();
     }
 
 

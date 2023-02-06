@@ -60,8 +60,8 @@ export const LeavesSprite: Sprite = {
 
 export const ArcadeFont: Font = {
     key: "arcadeFont",
-    assetLocation: "assets/fonts/arcade.png",
-    xmlLocation: "assets/fonts/arcade.xml"
+    assetLocation: "assets/fonts/gem.png",
+    xmlLocation: "assets/fonts/gem.xml"
 }
 
 export const RootSprite: Sprite = {
@@ -96,6 +96,11 @@ export const GlucoseIcon: Sprite = {
     assetLocation: "assets/icons/glucose.png"
 }
 
+export const ParticleSprite: Sprite = {
+    key: "particle",
+    assetLocation: "assets/particle.png"
+}
+
 export const AbovegroundBGM: Asset = {
     key: 'aboveground', 
     assetLocation: 'assets/audio/aboveground-final2.ogg'
@@ -104,6 +109,26 @@ export const AbovegroundBGM: Asset = {
 export const UndergroundBGM: Asset = {
     key: 'underground', 
     assetLocation: 'assets/audio/underground-alt-lowpass3.ogg'
+}
+
+export const DiggingSFX: Asset = {
+    key: 'digSFX', 
+    assetLocation: 'assets/audio/digging_sound.ogg'
+}
+
+export const StartBackground: Asset = {
+    key: 'startbackground',
+    assetLocation: 'assets/startscreen.png'
+}
+
+export const KSFX: Asset = {
+    key: 'kSFX', 
+    assetLocation: 'assets/audio/kpop.ogg'
+}
+
+export const H2OSFX: Asset = {
+    key: 'h2oSFX', 
+    assetLocation: 'assets/audio/waterpop.ogg'
 }
 
 export const AssetLoader = {

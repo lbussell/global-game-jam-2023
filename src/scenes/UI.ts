@@ -47,6 +47,10 @@ export default class UI extends Phaser.Scene {
     private _waterText?: Phaser.GameObjects.BitmapText;
     private _potasText?: Phaser.GameObjects.BitmapText;
     private _glucoseText?: Phaser.GameObjects.BitmapText;
+    private _sunUnderText?: Phaser.GameObjects.BitmapText;
+    private _waterUnderText?: Phaser.GameObjects.BitmapText;
+    private _potasUnderText?: Phaser.GameObjects.BitmapText;
+    private _glucoseUnderText?: Phaser.GameObjects.BitmapText;
 
     private _padding: number = 8;
 
@@ -96,25 +100,29 @@ export default class UI extends Phaser.Scene {
                 sloty(slot),
                 sprite);
 
-        const addMenuText = (slot: number, text: string): Phaser.GameObjects.BitmapText =>
+        const addMenuText = (slot: number, part: number, text: string): Phaser.GameObjects.BitmapText =>
             this.addBitmapText(
                 menuTopLeftAnchor + this._rightRectWidthInTiles*scaledTileSize/2,
-                sloty(slot) + /* dist from slot top to text */ TILE_SCALE*18,
+                sloty(slot) + /* dist from slot top to text */ TILE_SCALE*18 + part * 7*TILE_SCALE,
                 text,
                 0.5
             );
 
         addMenuIcon(1, SunIcon);
-        this._sunText = addMenuText(1, "69");
+        this._sunText = addMenuText(1, 0, "69");
+        this._sunUnderText = addMenuText(1, 1, "69");
 
         addMenuIcon(2, WaterIcon);
-        this._waterText = addMenuText(2, "420");
+        this._waterText = addMenuText(2, 0, "420");
+        this._waterUnderText = addMenuText(2, 1, "420");
 
         addMenuIcon(3, PotassiumIcon);
-        this._potasText = addMenuText(3, "666");
+        this._potasText = addMenuText(3, 0, "666");
+        this._potasUnderText = addMenuText(3, 1, "666");
 
         addMenuIcon(4, GlucoseIcon);
-        this._glucoseText = addMenuText(4, "1337");
+        this._glucoseText = addMenuText(4, 0, "1337");
+        this._glucoseUnderText = addMenuText(4, 1, "1337");
 
         // addMenuIcon(5, PotassiumIcon)
         // /* this._sunText = */ addMenuText(5, "9999");
@@ -138,15 +146,22 @@ export default class UI extends Phaser.Scene {
 
     updateResourceUI(r: ResourceAmounts): void {
 
-        function numsToText(amt: number, increase: number): string {
-            return amt.toFixed(0).toString() + "(+" + increase.toFixed(1).toString() + ")"
-        }
+        // function numsToText(amt: number, increase: number): string {
+        //     return amt.toFixed(0).toString() + "(+" + increase.toFixed(1).toString() + ")"
+        // }
+        const numsToText = (amt: number): string => amt.toFixed(0).toString();
+
+        const numsToTextUnder = (increase: number): string => "(+" + increase.toFixed(1).toString() + ")";
 
         if (this._isLoaded) {
-            this._sunText?.setText(numsToText(r.sunlight, r.sunlightCollectionRate - r.glucoseRate));
-            this._potasText?.setText(numsToText(r.potassium, r.potassiumRate));
-            this._waterText?.setText(numsToText(r.water, r.waterRate));
-            this._glucoseText?.setText(numsToText(r.glucose, r.glucoseRate));
+            this._sunText?.setText(numsToText(r.sunlight));
+            this._sunUnderText?.setText(numsToTextUnder(r.sunlightCollectionRate - r.glucoseRate));
+            this._potasText?.setText(numsToText(r.potassium));
+            this._potasUnderText?.setText(numsToTextUnder(r.potassiumRate));
+            this._waterText?.setText(numsToText(r.water));
+            this._waterUnderText?.setText(numsToTextUnder(r.waterRate));
+            this._glucoseText?.setText(numsToText(r.glucose));
+            this._glucoseUnderText?.setText(numsToTextUnder(r.glucoseRate));
 
             if (this._isShopShowing)
             {
@@ -157,15 +172,6 @@ export default class UI extends Phaser.Scene {
         }
     }
 
-    // updateResourceUI(r: ResourceAmounts): void {
-    //     if (this._isLoaded) {
-    //         this._sunText?.setText(r.sunlightCollectionRate.toFixed(0).toString());
-    //         this._potasText?.setText(r.potassium.toFixed(0).toString());
-    //         this._waterText?.setText(r.water.toFixed(0).toString());
-    //         this._glucoseText?.setText(r.glucose.toFixed(0).toString());
-    //     }
-    // }
-
     addSprite(x: number, y: number, s: Sprite) {
         return this.add.sprite(x, y, s.key).setOrigin(0, 0).setScale(TILE_SCALE);
     }
@@ -174,7 +180,7 @@ export default class UI extends Phaser.Scene {
         return this.add.bitmapText(x, y, ArcadeFont.key, s)
             .setOrigin(originx, originy)
             .setScale(1)
-            .setFontSize(TILE_SCALE * 5);
+            .setFontSize(TILE_SCALE * 6);
     }
 
     addBitmapTextByLine(x: number, line: number, s: string): Phaser.GameObjects.BitmapText {
