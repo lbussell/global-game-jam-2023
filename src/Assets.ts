@@ -121,6 +121,11 @@ export const StartBackground: Asset = {
     assetLocation: 'assets/startscreen.png'
 }
 
+export const GameTitle: Asset = {
+    key: 'gametitleimage',
+    assetLocation: 'assets/becometreetitle.png'
+}
+
 export const KSFX: Asset = {
     key: 'kSFX', 
     assetLocation: 'assets/audio/kpop.ogg'
