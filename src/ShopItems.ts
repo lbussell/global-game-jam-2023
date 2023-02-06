@@ -1,9 +1,11 @@
 import GameManager from "./GameManager";
 import { GlassRoot, NormalRoot, StretchRoot } from "./RootTypes";
+import {GlassRootIcon, NormalRootIcon } from "./Assets";
 
 export interface ShopItem {
     itemId: number,             // Id
     itemName: string,           // Item name in the shop
+    itemIconKey: string | undefined,
     itemGroup: string,          // Group name, other items in this group will be deactivated when this is activated
     sunCost: () => number,            // Sun cost to purchase
     waterCost: () => number,          // Water cost to purchase
@@ -22,6 +24,7 @@ export const ActivateNormalRoot = (gameManager: GameManager): ShopItem => {
     return {
         itemId: 0,
         itemName: "Normal Root",
+        itemIconKey: NormalRootIcon.key,
         itemGroup: 'roottype',
         sunCost() { return 0; },
         waterCost(){ return 0; },
@@ -43,6 +46,7 @@ export const UnlockGlassRoot = (gameManager: GameManager): ShopItem => {
     return {
         itemId: 1,
         itemName: "Glass Root",
+        itemIconKey: GlassRootIcon.key,
         itemGroup: 'roottype',
         sunCost() { return 0; },
         waterCost(){ return 10; },
@@ -82,6 +86,7 @@ export const UpgradeTree = (gameManager: GameManager): ShopItem => {
     return {
         itemId: 2,
         itemGroup: 'treeupgrade',
+        itemIconKey: undefined,
         itemName: "Upgrade Tree",
         sunCost: sunCost,
         waterCost: waterCost,
@@ -102,6 +107,7 @@ export const UnlockStretchRoot = (gameManager: GameManager): ShopItem => {
     return {
         itemId: 2,
         itemName: "Stretch Root",
+        itemIconKey: undefined,
         itemGroup: 'roottype',
         sunCost() { return 10; },
         waterCost(){ return 0; },
@@ -124,6 +130,7 @@ export const UpgradeRoots = (gameManager: GameManager): ShopItem => {
         itemId: 3,
         level: 1,
         itemName: "Gather Faster",
+        itemIconKey: undefined,
         itemGroup: 'upgrade',
         sunCost() { return 0; },
         waterCost(){ return 0; },

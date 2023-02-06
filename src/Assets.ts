@@ -108,6 +108,16 @@ export const ParticleSprite: Sprite = {
     assetLocation: "assets/particle.png"
 }
 
+export const GlassRootIcon: Sprite = {
+    key: "glassroot",
+    assetLocation: "assets/glassroot.png"
+}
+
+export const NormalRootIcon: Sprite = {
+    key: "normalroot",
+    assetLocation: "assets/normalroot.png"
+}
+
 export const AbovegroundBGM: Asset = {
     key: 'aboveground', 
     assetLocation: 'assets/audio/aboveground-final2.ogg'
