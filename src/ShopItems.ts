@@ -1,5 +1,5 @@
 import GameManager from "./GameManager";
-import { GlassRoot, NormalRoot, RootType } from "./RootTypes";
+import { BulbRoot, EfficientRoot, GlassRoot, NormalRoot, RootType, SoilRoot, StretchRoot } from "./RootTypes";
 
 export interface ShopItem {
     itemId: number,             // Id
@@ -39,13 +39,89 @@ export const UnlockGlassRoot = (gameManager: GameManager): ShopItem => {
     return {
         itemId: 1,
         itemGroup: 'roottype',
-        sunCost: 0,
-        waterCost: 10,
-        potassiumCost: 10,
+        sunCost: 50,
+        waterCost: 0,
+        potassiumCost: 0,
         glucoseCost: 0,
         onPurchase() {},
         onActivate() {
             gameManager.activeRootType = GlassRoot();
+        },
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: false,
+        isHovered: false
+    }
+}
+
+export const UnlockBulbRoot = (gameManager: GameManager): ShopItem => {
+    return {
+        itemId: 2,
+        itemGroup: 'roottype',
+        sunCost: 0,
+        waterCost: 0,
+        potassiumCost: 0,
+        glucoseCost: 0,
+        onPurchase() {},
+        onActivate() {
+            gameManager.activeRootType = BulbRoot();
+        },
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: false,
+        isHovered: false
+    }
+}
+
+export const UnlockStretchRoot = (gameManager: GameManager): ShopItem => {
+    return {
+        itemId: 3,
+        itemGroup: 'roottype',
+        sunCost: 0,
+        waterCost: 0,
+        potassiumCost: 0,
+        glucoseCost: 0,
+        onPurchase() {},
+        onActivate() {
+            gameManager.activeRootType = StretchRoot();
+        },
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: false,
+        isHovered: false
+    }
+}
+
+export const UnlockSoilRoot = (gameManager: GameManager): ShopItem => {
+    return {
+        itemId: 4,
+        itemGroup: 'roottype',
+        sunCost: 0,
+        waterCost: 0,
+        potassiumCost: 0,
+        glucoseCost: 0,
+        onPurchase() {},
+        onActivate() {
+            gameManager.activeRootType = SoilRoot();
+        },
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: false,
+        isHovered: false
+    }
+}
+
+export const UnlockEfficientRoot = (gameManager: GameManager): ShopItem => {
+    return {
+        itemId: 5,
+        itemGroup: 'roottype',
+        sunCost: 0,
+        waterCost: 0,
+        potassiumCost: 0,
+        glucoseCost: 0,
+        onPurchase() {},
+        onActivate() {
+            gameManager.activeRootType = EfficientRoot();
         },
         onDeactivate() {},
         isActive: false,

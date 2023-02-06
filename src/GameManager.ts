@@ -10,6 +10,7 @@ export interface ResourceAmounts {
     waterRate: number,
     potassium: number,
     potassiumRate: number,
+    bonusPotassiumRate : number
     glucose: number,
     glucoseRate: number
 }
@@ -36,9 +37,10 @@ export default class GameManager {
             sunlightCollectionRate: 2,
             water: 0,
             waterRate: 0,
-            potassium: 0,
+            potassium: 2000,
             potassiumRate: 0,
-            glucose: 0,
+            bonusPotassiumRate: 0,
+            glucose: 20000,
             glucoseRate: 0
         }
 
@@ -64,7 +66,6 @@ export default class GameManager {
         // grab resources from the ground
         this.attachedResources.forEach(r => {
             if (r.resourceQuantity > 0) {
-
                 let toAdd = 
                     r.ratePerSec
                     * this._gatherRateMultiplier
@@ -95,6 +96,8 @@ export default class GameManager {
 
         let photosynthesisAmt = this._basePhotosynthesisRate * this._photosynthesisRateMultiplier * dt;
         photosynthesisAmt = Math.min(this.resourceAmounts.sunlight, photosynthesisAmt);
+
+        this.resourceAmounts.potassium += this.resourceAmounts.bonusPotassiumRate * dt;
 
         // convert sunlight into glucose via photosynthesis
         this.resourceAmounts.glucose += photosynthesisAmt;

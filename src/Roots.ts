@@ -14,6 +14,7 @@ import AudioManager from "./AudioManager";
 export default class Root {
     private _lastPoints: Phaser.Math.Vector2[];
     private _allPoints: Phaser.Math.Vector2[];
+    private _allPointsTypes : RootTypes[];
     private _scene: Phaser.Scene;
     private _underground: Underground;
     private _gameManager: GameManager;
@@ -50,6 +51,9 @@ export default class Root {
         // Track all points in the "full" rope
         this._allPoints = [];
         this._allPoints = this._allPoints.concat(this._lastPoints);
+
+        this._allPointsTypes = new Array(this._allPoints.length).fill(RootTypes.Normal);
+
 
         this._ghostPoints = [];
 
@@ -115,7 +119,7 @@ export default class Root {
         for (let j=1; j<closestPointIndexes.length; j++)
         {
             let i = closestPointIndexes[j];
-            if (i == -1)
+            if (i == -1 || this._allPointsTypes[i] == RootTypes.Bulb)
             {
                 continue;
             }
@@ -313,6 +317,8 @@ export default class Root {
         // Insert new point
         this._lastPoints = this._ghostPoints;
         this._allPoints = this._allPoints.concat(this._lastPoints);
+        var newTypeArray = new Array(this._lastPoints.length).fill(type);
+        this._allPointsTypes.concat(newTypeArray);
 
         // Draw rope using the current point set
         let idx = 0;
@@ -373,7 +379,8 @@ export default class Root {
 
         if (type.rootType == RootTypes.Soil)
         {
-            this._gameManager.resourceAmounts.potassiumRate += 1;
+            this._gameManager.resourceAmounts.bonusPotassiumRate += 20;
+            console.log("place soil root")
         }
 
         // Subtract cost

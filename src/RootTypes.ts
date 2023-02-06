@@ -79,8 +79,3 @@ export const EfficientRoot = (): RootType =>
         glucoseCost: 0
     }
 }
-
-export const AllRootTypes = (): RootType[] =>
-{
-    return [NormalRoot(), GlassRoot()];
-}
