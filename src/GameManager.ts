@@ -35,12 +35,12 @@ export default class GameManager {
         this.resourceAmounts = {
             sunlight: 0,
             sunlightCollectionRate: 2,
-            water: 0,
+            water: 100,
             waterRate: 0,
-            potassium: 2000,
+            potassium: 100,
             potassiumRate: 0,
             bonusPotassiumRate: 0,
-            glucose: 20000,
+            glucose: 0,
             glucoseRate: 0
         }
 
@@ -54,6 +54,13 @@ export default class GameManager {
     public levelUp() {
         // TODO: eat resources here
         this._tree.levelUp();
+        this.resourceAmounts.sunlightCollectionRate += 2;
+        this._photosynthesisRateMultiplier += 1;
+    }
+
+    public setGatherRateMultiplier(newVal: number)
+    {
+        this._gatherRateMultiplier = newVal;
     }
 
     public updateAttachedResources(dt: number) {
@@ -104,9 +111,9 @@ export default class GameManager {
         this.resourceAmounts.sunlight -= photosynthesisAmt;
 
 
-        this.resourceAmounts.waterRate = (this.resourceAmounts.water - oldWater)/dt;
-        this.resourceAmounts.glucoseRate = (this.resourceAmounts.glucose - oldGlucose)/dt;
-        this.resourceAmounts.potassiumRate = (this.resourceAmounts.potassium - oldPotassium)/dt;
+        this.resourceAmounts.waterRate = (this.resourceAmounts.water - oldWater)/dt + 0.1;
+        this.resourceAmounts.glucoseRate = (this.resourceAmounts.glucose - oldGlucose)/dt + 0.1;
+        this.resourceAmounts.potassiumRate = (this.resourceAmounts.potassium - oldPotassium)/dt + 0.1;
     }
 
     // return true if the attach was successful

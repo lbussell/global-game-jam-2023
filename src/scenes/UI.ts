@@ -12,7 +12,7 @@ import { TILE_SCALE, TILE_SIZE, WINDOW_SIZE } from "../Constants";
 import World from "./Game";
 import { Potassium } from "../Resources";
 import { ResourceAmounts } from "../GameManager";
-import { ShopItem, ActivateNormalRoot, UnlockGlassRoot, UnlockBulbRoot, UnlockStretchRoot, UnlockEfficientRoot, UnlockSoilRoot } from "../ShopItems"
+import { ShopItem, ActivateNormalRoot, UnlockGlassRoot, UnlockBulbRoot, UnlockStretchRoot, UnlockEfficientRoot, UnlockSoilRoot, UpgradeTree, UpgradeRoots } from "../ShopItems"
 
 export default class UI extends Phaser.Scene {
     private _isLoaded: boolean;
@@ -33,6 +33,7 @@ export default class UI extends Phaser.Scene {
     private _shopButtonSpacing: number = 5;
     private _shopButtonEdgeSize: number = 100;
     private _shopButtons: Phaser.GameObjects.Rectangle[];
+    private _shopObjects: Phaser.GameObjects.GameObject [][];
 
     private _shopItems: ShopItem[];
 
@@ -43,14 +44,14 @@ export default class UI extends Phaser.Scene {
     private _shopUnlockedHoverColor: number = 0x7dfab5;
     private _shopActiveColor: number = 0xc7ff5e;
 
-    private _sunText?: Phaser.GameObjects.BitmapText;
-    private _waterText?: Phaser.GameObjects.BitmapText;
-    private _potasText?: Phaser.GameObjects.BitmapText;
-    private _glucoseText?: Phaser.GameObjects.BitmapText;
-    private _sunUnderText?: Phaser.GameObjects.BitmapText;
-    private _waterUnderText?: Phaser.GameObjects.BitmapText;
-    private _potasUnderText?: Phaser.GameObjects.BitmapText;
-    private _glucoseUnderText?: Phaser.GameObjects.BitmapText;
+    private _sunText?: Phaser.GameObjects.Text;
+    private _waterText?: Phaser.GameObjects.Text;
+    private _potasText?: Phaser.GameObjects.Text;
+    private _glucoseText?: Phaser.GameObjects.Text;
+    private _sunUnderText?: Phaser.GameObjects.Text;
+    private _waterUnderText?: Phaser.GameObjects.Text;
+    private _potasUnderText?: Phaser.GameObjects.Text;
+    private _glucoseUnderText?: Phaser.GameObjects.Text;
 
     private _padding: number = 8;
 
@@ -60,6 +61,7 @@ export default class UI extends Phaser.Scene {
         this._isShopShowing = false;
         this._shopButtons = [];
         this._shopItems = [];
+        this._shopObjects = [];
         Phaser.Scene.call(this, { key: "UIScene", active: true });
     }
 
@@ -100,7 +102,7 @@ export default class UI extends Phaser.Scene {
                 sloty(slot),
                 sprite);
 
-        const addMenuText = (slot: number, part: number, text: string): Phaser.GameObjects.BitmapText =>
+        const addMenuText = (slot: number, part: number, text: string): Phaser.GameObjects.Text =>
             this.addBitmapText(
                 menuTopLeftAnchor + this._rightRectWidthInTiles*scaledTileSize/2,
                 sloty(slot) + /* dist from slot top to text */ TILE_SCALE*18 + part * 7*TILE_SCALE,
@@ -176,15 +178,15 @@ export default class UI extends Phaser.Scene {
         return this.add.sprite(x, y, s.key).setOrigin(0, 0).setScale(TILE_SCALE);
     }
 
-    addBitmapText(x: number, y: number, s: string, originx: number = 0, originy: number = 0): Phaser.GameObjects.BitmapText {
-        return this.add.bitmapText(x, y, ArcadeFont.key, s)
+    addBitmapText(x: number, y: number, s: string, originx: number = 0, originy: number = 0): Phaser.GameObjects.Text {
+        return this.add.text(x, y, s)
             .setOrigin(originx, originy)
             .setScale(1)
             .setFontSize(TILE_SCALE * 6);
     }
 
-    addBitmapTextByLine(x: number, line: number, s: string): Phaser.GameObjects.BitmapText {
-        return this.add.bitmapText(x+4, 600-(32*line)-4, ArcadeFont.key, s).setOrigin(0, 1).setScale(1);
+    addBitmapTextByLine(x: number, line: number, s: string): Phaser.GameObjects.Text {
+        return this.add.text(x+4, 600-(32*line)-4, s).setOrigin(0, 1).setScale(1);
     }
 
     formatTimeString(t: number): string {
@@ -196,12 +198,15 @@ export default class UI extends Phaser.Scene {
         {
             if (!this._itemsBuilt)
             {
+                this._shopItems.push(UpgradeTree(this._gameScene!!.gameManager!!));
                 this._shopItems.push(ActivateNormalRoot(this._gameScene!!.gameManager!!));
                 this._shopItems.push(UnlockGlassRoot(this._gameScene!!.gameManager!!));
                 this._shopItems.push(UnlockBulbRoot(this._gameScene!!.gameManager!!));
                 this._shopItems.push(UnlockStretchRoot(this._gameScene!!.gameManager!!));
                 this._shopItems.push(UnlockSoilRoot(this._gameScene!!.gameManager!!));
                 this._shopItems.push(UnlockEfficientRoot(this._gameScene!!.gameManager!!));
+                this._shopItems.push(UpgradeRoots(this._gameScene!!.gameManager!!));
+                // this._shopItems.push(GenerateGlucose(this._gameScene!!.gameManager!!));
 
                 this._itemsBuilt = true;
             }
@@ -240,9 +245,12 @@ export default class UI extends Phaser.Scene {
         let row = Math.floor(this._shopButtons.length / (this._shopButtonEdgeSize + this._shopButtonSpacing));
         let column = this._shopButtons.length % (this._shopButtonEdgeSize + this._shopButtonSpacing);
 
+        let buttonX = this._shopButtonSpacing + this._shopEdgeOffset + column * (this._shopButtonEdgeSize + this._shopButtonSpacing);
+        let buttonY = this._shopButtonSpacing + this._shopEdgeOffset + row * (this._shopButtonEdgeSize + this._shopButtonSpacing);
+
         let button = this.add.rectangle(
-            this._shopButtonSpacing + this._shopEdgeOffset + column * (this._shopButtonEdgeSize + this._shopButtonSpacing),
-            this._shopButtonSpacing + this._shopEdgeOffset + row * (this._shopButtonEdgeSize + this._shopButtonSpacing),
+            buttonX,
+            buttonY,
             this._shopButtonEdgeSize,
             this._shopButtonEdgeSize,
             this._shopLockedUnafforableColor
@@ -267,7 +275,10 @@ export default class UI extends Phaser.Scene {
 
                 if (this.purchaseItem(item))
                 {
-                    item.isUnlocked = true;
+                    if (!item.isProgressiveUpgrade)
+                    {
+                        item.isUnlocked = true;
+                    }
                     item.onPurchase();
                     this.updateItemColor(item, button);
                 }
@@ -291,23 +302,71 @@ export default class UI extends Phaser.Scene {
             
         });
 
+        let costIconSpacing = (this._shopButtonEdgeSize - 10) / 4;
+
+
+        let sunSprite = this.add.sprite(buttonX + 5, buttonY + this._shopButtonEdgeSize - 35, SunIcon.key).setOrigin(0, 0);
+        let waterSprite = this.add.sprite(buttonX + 5 + costIconSpacing, buttonY + this._shopButtonEdgeSize - 35, WaterIcon.key).setOrigin(0, 0);
+        let potassiumSprite = this.add.sprite(buttonX + 5 + costIconSpacing*2, buttonY + this._shopButtonEdgeSize - 35, PotassiumIcon.key).setOrigin(0, 0);
+        let glucoseSprite = this.add.sprite(buttonX + 5 + costIconSpacing*3, buttonY + this._shopButtonEdgeSize - 35, GlucoseIcon.key).setOrigin(0, 0);
+
+        let sunCost = this.add.text(buttonX + 10, buttonY + this._shopButtonEdgeSize - 15, item.sunCost().toString())
+            .setOrigin(0, 0)
+            .setScale(1)
+            .setFontSize(12);
+
+        let waterCost = this.add.text(buttonX + 10 + costIconSpacing, buttonY + this._shopButtonEdgeSize - 15, item.waterCost().toString())
+            .setOrigin(0, 0)
+            .setScale(1)
+            .setFontSize(12);
+
+        let potassiumCost = this.add.text(buttonX + 10 + costIconSpacing*2, buttonY + this._shopButtonEdgeSize - 15, item.potassiumCost().toString())
+            .setOrigin(0, 0)
+            .setScale(1)
+            .setFontSize(12);
+
+        let glucoseCost = this.add.text(buttonX + 10 + costIconSpacing*3, buttonY + this._shopButtonEdgeSize - 15, item.glucoseCost().toString())
+            .setOrigin(0, 0)
+            .setScale(1)
+            .setFontSize(12);
+
+        let name = this.add.text(buttonX + 10, buttonY + 10, item.itemName.toString(), {align: "center"})
+        .setOrigin(0, 0)
+        .setFontSize(12);
+        
+
         this._shopButtons.push(button);
+        this._shopObjects.push([]);
+
+        this._shopObjects[this._shopObjects.length - 1].push(button);
+
+        this._shopObjects[this._shopObjects.length - 1].push(sunSprite);
+        this._shopObjects[this._shopObjects.length - 1].push(waterSprite);
+        this._shopObjects[this._shopObjects.length - 1].push(potassiumSprite);
+        this._shopObjects[this._shopObjects.length - 1].push(glucoseSprite);
+
+        this._shopObjects[this._shopObjects.length - 1].push(sunCost);
+        this._shopObjects[this._shopObjects.length - 1].push(waterCost);
+        this._shopObjects[this._shopObjects.length - 1].push(potassiumCost);
+        this._shopObjects[this._shopObjects.length - 1].push(glucoseCost);
+
+        this._shopObjects[this._shopObjects.length - 1].push(name);
     }
 
     purchaseItem(item: ShopItem): boolean {
         // Verify resources
-        if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost
-            || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost
-            || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost
-            || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost)
+        if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost()
+            || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost()
+            || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost()
+            || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost())
             {
                 return false;
             }
         
-        this._gameScene!!.gameManager!!.resourceAmounts.sunlight -= item.sunCost;
-        this._gameScene!!.gameManager!!.resourceAmounts.glucose -= item.glucoseCost;
-        this._gameScene!!.gameManager!!.resourceAmounts.potassium -= item.potassiumCost;
-        this._gameScene!!.gameManager!!.resourceAmounts.water -= item.waterCost;
+        this._gameScene!!.gameManager!!.resourceAmounts.sunlight -= item.sunCost();
+        this._gameScene!!.gameManager!!.resourceAmounts.glucose -= item.glucoseCost();
+        this._gameScene!!.gameManager!!.resourceAmounts.potassium -= item.potassiumCost();
+        this._gameScene!!.gameManager!!.resourceAmounts.water -= item.waterCost();
 
         return true;
     }
@@ -327,10 +386,10 @@ export default class UI extends Phaser.Scene {
             }
         }
         else {
-            if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost
-                || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost
-                || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost
-                || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost)
+            if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost()
+                || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost()
+                || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost()
+                || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost())
                 {
                     itemButton.fillColor = this._shopLockedUnafforableColor;
                 }
@@ -349,8 +408,10 @@ export default class UI extends Phaser.Scene {
     hideShop(): void {
         this._shopMenuRect?.destroy();
 
-        this._shopButtons.forEach(button => {
-            button.destroy();
+        this._shopObjects.forEach(objectSet => {
+            objectSet.forEach(obj => {
+                obj.destroy();
+            })
         });
 
         this._shopButtons = [];

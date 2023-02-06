@@ -17,7 +17,8 @@ import {
   ParticleSprite,
   DiggingSFX,
   KSFX,
-  H2OSFX
+  H2OSFX,
+  LeavesSprites
 } from '../Assets';
 
 import Underground from '../Underground';
@@ -68,6 +69,7 @@ export default class World extends Phaser.Scene {
     AssetLoader.loadSpriteSheet(this, PotassiumTiles);
     AssetLoader.loadSpriteSheet(this, RootSprites);
     AssetLoader.loadSpriteSheet(this, GroundTiles);
+    AssetLoader.loadSpriteSheet(this, LeavesSprites);
 
     AssetLoader.loadAudio(this, AbovegroundBGM);
     AssetLoader.loadAudio(this, UndergroundBGM);
@@ -86,8 +88,10 @@ export default class World extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
     this.inputManager = new InputManager(this);
     this.underground = new Underground(this, this.cameras.main);
-    this.audioManager = new AudioManager(this, ['aboveground', 'underground'], ['digSFX', 'kSFX', 'h2oSFX']);
-    this.audioManager.playLoops();
+    if(!this.audioManager){
+      this.audioManager = new AudioManager(this, ['aboveground', 'underground'], ['digSFX', 'kSFX', 'h2oSFX']);
+      this.audioManager.playLoops();
+    }
     this.particleManager = new ParticleManaager(this, this.audioManager);
     this.input.keyboard.on('keydown-M', () => this.audioManager?.toggleMuteAll());
 

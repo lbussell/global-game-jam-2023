@@ -24,11 +24,10 @@ export default class Root {
     private _ghostRopes: Phaser.GameObjects.Rope[] = [];
     private _ghostPoints: Phaser.Math.Vector2[];
     private _ghostOkColor = Phaser.Display.Color.GetColor32(75, 180, 180, 150);
-    private _ghostInvalidColor = Phaser.Display.Color.GetColor32(180, 75, 75, 150);
+    private _ghostInvalidColor = Phaser.Display.Color.GetColor32(200, 50, 50, 150);
     private _currentFrames: number[] = [];
 
     private _growthDistance = 32 / 3 * Constants.TILE_SCALE;
-    private _maxGhosts = 100;
     private _maxAngleRadians = 0.06;
     private _upAngleRestriction = Math.PI / 3;
     private _explorationPoints = 20;
@@ -36,6 +35,9 @@ export default class Root {
     private _upVector = new Phaser.Math.Vector2(0, -1);
     private _leftVector = new Phaser.Math.Vector2(-1, 0);
     private _rightVector = new Phaser.Math.Vector2(1, 0);
+
+
+    private _warningText: Phaser.GameObjects.Text;
 
     constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager, private particleManager: ParticleManaager, private audioManager: AudioManager) {
         this._scene = scene;
@@ -57,9 +59,9 @@ export default class Root {
 
         this._ghostPoints = [];
 
-        for (let i=0; i<this._maxGhosts; i++)
+        for (let i=0; i<200; i++)
         {
-            this._currentFrames.push(Phaser.Math.Between(0, 7));
+            this._currentFrames.push(Phaser.Math.Between(0, 3));
         }
 
         // Track all ropes in the "full" rope
@@ -127,7 +129,7 @@ export default class Root {
             // Check if starting at this points gets closer
             let currentStart = this._allPoints[i];
             let currentStartDirection = this._allPoints[i].clone().subtract(this._allPoints[i- 1]).normalize();
-            let points = this.getGhostPointsTo(worldPoint, currentStart, currentStartDirection);
+            let points = this.getGhostPointsTo(worldPoint, currentStart, currentStartDirection, type);
             let distance = worldPoint.distanceSq(points[points.length - 1]);
 
             // If we already have a perfect route, find the shorter one
@@ -222,7 +224,7 @@ export default class Root {
     }
 
     // Draws a ghost of root to the given position
-    getGhostPointsTo(worldPoint: Phaser.Math.Vector2, startPoint: Phaser.Math.Vector2, startDirection: Phaser.Math.Vector2): Phaser.Math.Vector2[] {
+    getGhostPointsTo(worldPoint: Phaser.Math.Vector2, startPoint: Phaser.Math.Vector2, startDirection: Phaser.Math.Vector2, type: RootType): Phaser.Math.Vector2[] {
         let points = [];
         points.push(startPoint);
 
@@ -231,7 +233,7 @@ export default class Root {
         let lastDistance = 100000;
 
         // Build ghost points
-        while (points.length < this._maxGhosts && points[points.length - 1].distance(worldPoint) > 1)
+        while (points.length < type.maxLength && points[points.length - 1].distance(worldPoint) > 1)
         {
             let direction = points[points.length-1].clone()
                 .subtract(worldPoint)
@@ -309,6 +311,13 @@ export default class Root {
             || this._gameManager.resourceAmounts.glucose < type.glucoseCost
             || this._gameManager.resourceAmounts.potassium < type.potassiumCost)
             {
+                if (this._warningText)
+                {
+                    this._warningText.destroy();
+                }
+                
+                this._warningText = this._scene.add.text(this._scene.input.mousePointer.worldX, this._scene.input.mousePointer.worldY, 'Not enough resources to place root');
+                this._scene.time.delayedCall(3000, () => this._warningText.destroy(), [], this);
                 return false;
             }
     
@@ -325,7 +334,8 @@ export default class Root {
         let frameIdx = 0;
         while (idx < this._lastPoints.length)
         {
-            let tilePoints: Phaser.Math.Vector2[] = [];
+            let tilePoints = [];
+
             if (--idx < 0)
             {
                 idx = 0;
@@ -346,13 +356,18 @@ export default class Root {
                 break;
             }
 
+            let tileColor = [];
+            for (let i=0; i<tilePoints.length; i++)
+            {
+                tileColor.push(type.rootColor);
+            }
+
             for (let i=0; i<tilePoints.length; i++)
             {
                 let tile = this._underground.getResourceTileAtWorldPos(tilePoints[i]);
 
-                if (tile != null)
+                if (tile != null && type.rootType != 1)
                 {
-                    console.log(tile);
                     if (this._gameManager.attachTo(tile, type)) {
                         this.particleManager.explode(tilePoints[i].x, tilePoints[i].y);
                         if(tile.type === 'potassium'){
@@ -367,14 +382,19 @@ export default class Root {
                 this.audioManager.playSFX('digSFX');
             }
 
-            this._allRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false));
+            if (type.rootColor == -1) {
+                this._allRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false));
+            }
+            else {
+                this._allRopes.push(this._scene.add.rope(0, 0, RootSprites.key, this._currentFrames[frameIdx++], tilePoints, false, tileColor));
+            }
         }
 
         this._currentFrames = [];
 
-        for (let i=0; i<this._maxGhosts; i++)
+        for (let i=0; i<type.maxLength; i++)
         {
-            this._currentFrames.push(Phaser.Math.Between(0, 7));
+            this._currentFrames.push(Phaser.Math.Between(0, 3));
         }
 
         if (type.rootType == RootTypes.Soil)
