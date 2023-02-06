@@ -18,7 +18,7 @@ export const NormalRoot = (): RootType => {
 
 export const GlassRoot = (): RootType => {
     return {
-        rootType: 0,
+        rootType: 1,
         sunCost: 30,
         waterCost: 0,
         potassiumCost: 0,

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import ProceduralTree from './ProceduralTree';
 import { ResourceTile, ResourceTileType, Water, Potassium } from './Resources';
+import { NormalRoot, GlassRoot, RootType } from "./RootTypes";
 
 export interface ResourceAmounts {
     sunlight: number,
@@ -27,6 +28,7 @@ export default class GameManager {
     private attachedResources: ResourceTile[] = [];
 
     public resourceAmounts: ResourceAmounts;
+    public activeRootType: RootType = NormalRoot();
 
     constructor(private _tree: ProceduralTree) {
         this.resourceAmounts = {

@@ -12,6 +12,7 @@ import { TILE_SCALE, TILE_SIZE, WINDOW_SIZE } from "../Constants";
 import World from "./Game";
 import { Potassium } from "../Resources";
 import { ResourceAmounts } from "../GameManager";
+import { ShopItem, ActivateNormalRoot, UnlockGlassRoot } from "../ShopItems"
 
 export default class UI extends Phaser.Scene {
     private _isLoaded: boolean;
@@ -22,6 +23,25 @@ export default class UI extends Phaser.Scene {
     private _rightRect?: Phaser.GameObjects.Rectangle;
     private readonly _rightRectWidthInTiles: number = 5;
     private _menuBGColor: number = 0x000000; // black
+    
+    private _isShopShowing: boolean;
+    private readonly _shopEdgeOffset: number = 50;
+    private _shopMenuRect?: Phaser.GameObjects.Rectangle;
+    private _shopMenuBGColor: number = 0x444444; // Grey
+    private _itemsBuilt: boolean = false;
+
+    private _shopButtonSpacing: number = 5;
+    private _shopButtonEdgeSize: number = 100;
+    private _shopButtons: Phaser.GameObjects.Rectangle[];
+
+    private _shopItems: ShopItem[];
+
+    private _shopLockedAfforableColor: number = 0x6761fa;
+    private _shopLockedAfforableHoverColor: number = 0x756ff2;
+    private _shopLockedUnafforableColor: number = 0x190254;
+    private _shopUnlockedColor: number = 0x50f299;
+    private _shopUnlockedHoverColor: number = 0x7dfab5;
+    private _shopActiveColor: number = 0xc7ff5e;
 
     private _sunText?: Phaser.GameObjects.BitmapText;
     private _waterText?: Phaser.GameObjects.BitmapText;
@@ -37,6 +57,9 @@ export default class UI extends Phaser.Scene {
     constructor() {
         super("UIScene");
         this._isLoaded = false;
+        this._isShopShowing = false;
+        this._shopButtons = [];
+        this._shopItems = [];
         Phaser.Scene.call(this, { key: "UIScene", active: true });
     }
 
@@ -106,6 +129,10 @@ export default class UI extends Phaser.Scene {
         // addMenuIcon(6, PotassiumIcon)
         // /* this._sunText = */ addMenuText(6, "uwu");
 
+
+        // Shop menu Logic
+        this.input.keyboard.on('keydown-S', () => this.toggleShop());
+
         this._isLoaded = true;
     }
     
@@ -135,6 +162,13 @@ export default class UI extends Phaser.Scene {
             this._waterUnderText?.setText(numsToTextUnder(r.waterRate));
             this._glucoseText?.setText(numsToText(r.glucose));
             this._glucoseUnderText?.setText(numsToTextUnder(r.glucoseRate));
+
+            if (this._isShopShowing)
+            {
+                this._shopItems.forEach((item, idx) => {
+                    this.updateItemColor(item, this._shopButtons[idx]);
+                })
+            }
         }
     }
 
@@ -155,5 +189,165 @@ export default class UI extends Phaser.Scene {
 
     formatTimeString(t: number): string {
         return "t=" + t;
+    }
+    
+    toggleShop(): void {
+        if (!this._isShopShowing)
+        {
+            if (!this._itemsBuilt)
+            {
+                this._shopItems.push(ActivateNormalRoot(this._gameScene!!.gameManager!!));
+                this._shopItems.push(UnlockGlassRoot(this._gameScene!!.gameManager!!));
+                this._itemsBuilt = true;
+            }
+
+            this.showShop();
+            this._isShopShowing = true;
+            this._gameScene!!.blockPlacement = true;
+        }
+        else
+        {
+            this.hideShop();
+            this._isShopShowing = false;
+            this._gameScene!!.blockPlacement = false;
+        }
+    }
+
+    showShop(): void {
+        this._shopMenuRect = this.add.rectangle(
+            this._shopEdgeOffset,
+            this._shopEdgeOffset,
+            WINDOW_SIZE.w - this._shopEdgeOffset * 2 - this._rightRectWidthInTiles*TILE_SIZE*TILE_SCALE,
+            WINDOW_SIZE.h - this._shopEdgeOffset * 2,
+            this._shopMenuBGColor
+        ).setOrigin(0, 0);
+
+        this._shopItems.forEach(item => {
+            this.addItem(item);
+        });
+    }
+
+    isShopShowing(): boolean {
+        return this._isShopShowing;
+    }
+
+    addItem(item: ShopItem) {
+        let row = Math.floor(this._shopButtons.length / (this._shopButtonEdgeSize + this._shopButtonSpacing));
+        let column = this._shopButtons.length % (this._shopButtonEdgeSize + this._shopButtonSpacing);
+
+        let button = this.add.rectangle(
+            this._shopButtonSpacing + this._shopEdgeOffset + column * (this._shopButtonEdgeSize + this._shopButtonSpacing),
+            this._shopButtonSpacing + this._shopEdgeOffset + row * (this._shopButtonEdgeSize + this._shopButtonSpacing),
+            this._shopButtonEdgeSize,
+            this._shopButtonEdgeSize,
+            this._shopLockedUnafforableColor
+        ).setOrigin(0, 0);
+
+        this.updateItemColor(item, button);
+
+        button.setInteractive();
+        button.on('pointerover', () => {
+            item.isHovered = true;
+            this.updateItemColor(item, button);
+        });
+
+        button.on('pointerout', () => {
+            item.isHovered = false;
+            this.updateItemColor(item, button);
+        });
+
+        button.on('pointerdown', () => {
+            // This is a purchase event
+            if (!item.isUnlocked) {
+
+                if (this.purchaseItem(item))
+                {
+                    item.isUnlocked = true;
+                    item.onPurchase();
+                    this.updateItemColor(item, button);
+                }
+            }
+            // This is an activate event
+            else if (!item.isActive) {
+                item.isActive = true;
+
+                // Deactivate other items in this group
+                this._shopItems.forEach((otherItem, idx) => {
+                    if (otherItem.itemGroup == item.itemGroup && otherItem.itemId != item.itemId) {
+                        otherItem.isActive = false;
+                        this.updateItemColor(otherItem, this._shopButtons[idx]);
+                        otherItem.onDeactivate();
+                    }
+                });
+
+                item.onActivate();
+                this.updateItemColor(item, button);
+            }
+            
+        });
+
+        this._shopButtons.push(button);
+    }
+
+    purchaseItem(item: ShopItem): boolean {
+        // Verify resources
+        if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost
+            || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost
+            || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost
+            || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost)
+            {
+                return false;
+            }
+        
+        this._gameScene!!.gameManager!!.resourceAmounts.sunlight -= item.sunCost;
+        this._gameScene!!.gameManager!!.resourceAmounts.glucose -= item.glucoseCost;
+        this._gameScene!!.gameManager!!.resourceAmounts.potassium -= item.potassiumCost;
+        this._gameScene!!.gameManager!!.resourceAmounts.water -= item.waterCost;
+
+        return true;
+    }
+
+    updateItemColor(item: ShopItem, itemButton: Phaser.GameObjects.Rectangle) {
+        if (item.isActive) {
+            itemButton.fillColor = this._shopActiveColor;
+            return;
+        }
+
+        if (item.isUnlocked) {
+            if (item.isHovered) {
+                itemButton.fillColor = this._shopUnlockedHoverColor;
+            }
+            else {
+                itemButton.fillColor = this._shopUnlockedColor;
+            }
+        }
+        else {
+            if (this._gameScene!!.gameManager!!.resourceAmounts.sunlight < item.sunCost
+                || this._gameScene!!.gameManager!!.resourceAmounts.glucose < item.glucoseCost
+                || this._gameScene!!.gameManager!!.resourceAmounts.potassium < item.potassiumCost
+                || this._gameScene!!.gameManager!!.resourceAmounts.water < item.waterCost)
+                {
+                    itemButton.fillColor = this._shopLockedUnafforableColor;
+                }
+            else 
+            {
+                if (item.isHovered) {
+                    itemButton.fillColor = this._shopLockedAfforableHoverColor;
+                }
+                else {
+                    itemButton.fillColor = this._shopLockedAfforableColor;
+                }
+            }
+        }
+    }
+
+    hideShop(): void {
+        this._shopMenuRect?.destroy();
+
+        this._shopButtons.forEach(button => {
+            button.destroy();
+        });
+
+        this._shopButtons = [];
     }
 }
