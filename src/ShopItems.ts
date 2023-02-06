@@ -66,10 +66,10 @@ export const UpgradeTree = (gameManager: GameManager): ShopItem => {
     const calcPotassiumCost = () => gameManager.treeLevel * 1;
     const calcGlucoseCost = () => gameManager.treeLevel * 1
 
-    let sunCost = calcSunCost();
-    let waterCost = calcWaterCost();
-    let potassiumCost = calcPotassiumCost();
-    let glucoseCost = calcGlucoseCost();
+    let sunCost = calcSunCost;
+    let waterCost = calcWaterCost;
+    let potassiumCost = calcPotassiumCost;
+    let glucoseCost = calcGlucoseCost;
     let isUnlocked = false;
 
     const onPurchase = () => {
