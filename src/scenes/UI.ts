@@ -12,7 +12,7 @@ import { TILE_SCALE, TILE_SIZE, WINDOW_SIZE } from "../Constants";
 import World from "./Game";
 import { Potassium } from "../Resources";
 import { ResourceAmounts } from "../GameManager";
-import { ShopItem, ActivateNormalRoot, UnlockGlassRoot, UpgradeTree } from "../ShopItems"
+import { ShopItem, ActivateNormalRoot, UnlockGlassRoot, UpgradeTree,  UnlockStretchRoot } from "../ShopItems"
 
 export default class UI extends Phaser.Scene {
     private _isLoaded: boolean;
@@ -201,6 +201,7 @@ export default class UI extends Phaser.Scene {
                 this._shopItems.push(UpgradeTree(this._gameScene!!.gameManager!!));
                 this._shopItems.push(ActivateNormalRoot(this._gameScene!!.gameManager!!));
                 this._shopItems.push(UnlockGlassRoot(this._gameScene!!.gameManager!!));
+                this._shopItems.push(UnlockStretchRoot(this._gameScene!!.gameManager!!));
                 this._itemsBuilt = true;
             }
 
