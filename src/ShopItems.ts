@@ -66,10 +66,10 @@ export const UpgradeTree = (gameManager: GameManager): ShopItem => {
     const calcPotassiumCost = () => gameManager.treeLevel * 1;
     const calcGlucoseCost = () => gameManager.treeLevel * 1
 
-    let sunCost = calcSunCost();
-    let waterCost = calcWaterCost();
-    let potassiumCost = calcPotassiumCost();
-    let glucoseCost = calcGlucoseCost();
+    let sunCost = calcSunCost;
+    let waterCost = calcWaterCost;
+    let potassiumCost = calcPotassiumCost;
+    let glucoseCost = calcGlucoseCost;
     let isUnlocked = false;
 
     const onPurchase = () => {
@@ -123,22 +123,24 @@ export const UnlockStretchRoot = (gameManager: GameManager): ShopItem => {
     }
 }
 
-// export const GrowTree = (gameManager: GameManager): ShopItem => {
-//     return {
-//         itemId: 3,
-//         itemName: "Grow the Tree",
-//         itemGroup: 'roottype',
-//         sunCost() { return 0; },
-//         waterCost(){ return 10; },
-//         potassiumCost(){ return 10; },
-//         glucoseCost(){ return 0; },
-//         onPurchase() {},
-//         onActivate() {
-//             gameManager.activeRootType = StretchRoot();
-//         },
-//         onDeactivate() {},
-//         isActive: false,
-//         isUnlocked: false,
-//         isHovered: false
-//     }
-// }
+export const UpgradeRoots = (gameManager: GameManager): ShopItem => {
+    return {
+        itemId: 3,
+        level: 1,
+        itemName: "Gather Faster",
+        itemGroup: 'upgrade',
+        sunCost() { return 0; },
+        waterCost(){ return 0; },
+        potassiumCost(){ return 0; },
+        glucoseCost(){ return 15*this.level; },
+        onPurchase() {
+            this.level += 1;
+            gameManager.setGatherRateMultiplier(this.level);
+        },
+        onActivate() {},
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: false,
+        isHovered: false
+    }
+}
