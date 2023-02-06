@@ -203,6 +203,7 @@ export default class UI extends Phaser.Scene {
                 this._shopItems.push(UnlockGlassRoot(this._gameScene!!.gameManager!!));
                 this._shopItems.push(UnlockStretchRoot(this._gameScene!!.gameManager!!));
                 this._shopItems.push(UpgradeRoots(this._gameScene!!.gameManager!!));
+                // this._shopItems.push(GenerateGlucose(this._gameScene!!.gameManager!!));
                 this._itemsBuilt = true;
             }
 
