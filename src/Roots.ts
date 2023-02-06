@@ -21,8 +21,8 @@ export default class Root {
     private _ghostRope: Phaser.GameObjects.Rope | undefined = undefined;
     private _ghostRopes: Phaser.GameObjects.Rope[] = [];
     private _ghostPoints: Phaser.Math.Vector2[];
-    private _ghostOkColor = Phaser.Display.Color.GetColor32(75, 180, 180, 150);
-    private _ghostInvalidColor = Phaser.Display.Color.GetColor32(180, 75, 75, 150);
+    private _ghostOkColor = Phaser.Display.Color.GetColor32(65, 173, 55, 150);
+    private _ghostInvalidColor = Phaser.Display.Color.GetColor32(2520, 3, 3, 150);
     private _currentFrames: number[] = [];
 
     private _growthDistance = 32 / 3 * Constants.TILE_SCALE;
@@ -34,6 +34,8 @@ export default class Root {
     private _upVector = new Phaser.Math.Vector2(0, -1);
     private _leftVector = new Phaser.Math.Vector2(-1, 0);
     private _rightVector = new Phaser.Math.Vector2(1, 0);
+
+    private _warningText: Phaser.GameObjects.Text;
 
     constructor(scene: Phaser.Scene, position: Phaser.Math.Vector2, underground: Underground, gameManager: GameManager, private particleManager: ParticleManaager) {
         this._scene = scene;
@@ -295,6 +297,13 @@ export default class Root {
             || this._gameManager.resourceAmounts.glucose < type.glucoseCost
             || this._gameManager.resourceAmounts.potassium < type.potassiumCost)
             {
+                if (this._warningText)
+                {
+                    this._warningText.destroy();
+                }
+                
+                this._warningText = this._scene.add.text(this._scene.input.mousePointer.x, this._scene.input.mousePointer.y, 'Not enough resources to place root');
+                this._scene.time.delayedCall(3000, () => this._warningText.destroy(), [], this);
                 return false;
             }
 
