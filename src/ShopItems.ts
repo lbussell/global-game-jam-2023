@@ -1,5 +1,5 @@
 import GameManager from "./GameManager";
-import { GlassRoot, NormalRoot, RootType } from "./RootTypes";
+import { GlassRoot, NormalRoot, StretchRoot } from "./RootTypes";
 
 export interface ShopItem {
     itemId: number,             // Id
@@ -49,6 +49,26 @@ export const UnlockGlassRoot = (gameManager: GameManager): ShopItem => {
         onPurchase() {},
         onActivate() {
             gameManager.activeRootType = GlassRoot();
+        },
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: false,
+        isHovered: false
+    }
+}
+
+export const UnlockStretchRoot = (gameManager: GameManager): ShopItem => {
+    return {
+        itemId: 2,
+        itemName: "Stretch Root",
+        itemGroup: 'roottype',
+        sunCost: 10,
+        waterCost: 0,
+        potassiumCost: 0,
+        glucoseCost: 10,
+        onPurchase() {},
+        onActivate() {
+            gameManager.activeRootType = StretchRoot();
         },
         onDeactivate() {},
         isActive: false,
