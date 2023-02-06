@@ -8,8 +8,8 @@ export default class AudioManager {
     private audioLoops: Phaser.Sound.BaseSound[] = [];
     private groundLevelScrollValue: number;
 
-    private aboveGround: any;
-    private underGround: any;
+    private aboveGround: Phaser.Sound.BaseSound;
+    private underGround: Phaser.Sound.BaseSound;
 
     private paused: boolean = false;
 
@@ -29,14 +29,19 @@ export default class AudioManager {
 
         this.aboveGround = scene.sound.get('aboveground');
         this.underGround = scene.sound.get('underground');
-        this.aboveGround.addMarker({name: 'aloop', duration: 33.39})
-        this.underGround.addMarker({name: 'uloop', duration: 33.39})
+        if (this.aboveGround.markers['aloop'] == null || this.aboveGround.markers['aloop'] == undefined) {
+            this.aboveGround.addMarker({name: 'aloop', duration: 33.39})
+        }
+        if (this.aboveGround.markers['uloop'] == null || this.aboveGround.markers['uloop'] == undefined) {
+            this.underGround.addMarker({name: 'uloop', duration: 33.39})
+        }
     }
 
     public playLoops() {
-        this.underGround.play('uloop', { loop: true });
-        this.aboveGround.play('aloop', { loop: true });
-
+        if (!this.underGround.isPlaying)
+            this.underGround.play('uloop', { loop: true });
+        if (!this.aboveGround.isPlaying)
+            this.aboveGround.play('aloop', { loop: true });
     }
 
     public interpolateVolume(){

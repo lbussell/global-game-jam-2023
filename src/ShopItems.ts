@@ -14,6 +14,7 @@ export interface ShopItem {
     onDeactivate: () => void,   // Callback on deactivation event
     isActive: boolean,          // Is the upgrade active
     isUnlocked: boolean,        // Is the upgrade unlocked (purchased)
+    isProgressiveUpgrade: boolean,
     isHovered: boolean          // Is the upgrade hovered (internal)
 }
 
@@ -33,6 +34,7 @@ export const ActivateNormalRoot = (gameManager: GameManager): ShopItem => {
         onDeactivate() {},
         isActive: false,
         isUnlocked: true,
+        isProgressiveUpgrade: false,
         isHovered: false,
     }
 }
@@ -53,6 +55,49 @@ export const UnlockGlassRoot = (gameManager: GameManager): ShopItem => {
         onDeactivate() {},
         isActive: false,
         isUnlocked: false,
+        isProgressiveUpgrade: false,
+        isHovered: false
+    }
+}
+
+export const UpgradeTree = (gameManager: GameManager): ShopItem => {
+    const calcSunCost = () => gameManager.treeLevel * 1;
+    const calcWaterCost = () => gameManager.treeLevel * 1;
+    const calcPotassiumCost = () => gameManager.treeLevel * 1;
+    const calcGlucoseCost = () => gameManager.treeLevel * 1
+
+    let sunCost = calcSunCost();
+    let waterCost = calcWaterCost();
+    let potassiumCost = calcPotassiumCost();
+    let glucoseCost = calcGlucoseCost();
+    let isUnlocked = false;
+
+    const onPurchase = () => {
+        console.log(isUnlocked);
+        gameManager.levelUp();
+        sunCost = calcSunCost();
+        waterCost = calcWaterCost();
+        potassiumCost = calcPotassiumCost();
+        glucoseCost = calcGlucoseCost();
+        isUnlocked = false;
+        console.log(isUnlocked);
+    };
+
+    return {
+        itemId: 2,
+        itemGroup: 'treeupgrade',
+        itemName: "Upgrade Tree",
+        sunCost: sunCost,
+        waterCost: waterCost,
+        potassiumCost: potassiumCost,
+        glucoseCost: glucoseCost,
+        onPurchase: onPurchase,
+        onActivate() {
+        },
+        onDeactivate() {},
+        isActive: false,
+        isUnlocked: isUnlocked,
+        isProgressiveUpgrade: true,
         isHovered: false
     }
 }
@@ -73,6 +118,7 @@ export const UnlockStretchRoot = (gameManager: GameManager): ShopItem => {
         onDeactivate() {},
         isActive: false,
         isUnlocked: false,
+        isProgressiveUpgrade: false,
         isHovered: false
     }
 }

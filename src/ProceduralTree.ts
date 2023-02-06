@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { TILE_SCALE, WINDOW_SIZE } from "./Constants";
-import { BranchSprite, LeavesSprite } from "./Assets";
+import { BranchSprite, LeavesSprite, LeavesSprites } from "./Assets";
 
 type degrees = number;
 type pixels = number;
@@ -41,14 +41,6 @@ export default class ProceduralTree {
     private readonly _drawBranches: boolean = true;
 
     constructor(private _scene: Phaser.Scene, x: number, y: number) {
-        // this.branch(
-        //     this._depthIterations(),
-        //     [WINDOW_SIZE.w / 2, 0],
-        //     // 10 + this.randomizeAngle(), 
-        //     0 + this.randomizeAngle(),
-        //     this._segmentHeight()
-        // );
-        // this.generateNewTree();
         this.levelUp();
     }
 
@@ -56,7 +48,6 @@ export default class ProceduralTree {
         this.level += 1;
         this.clearSprites();
         this.generateNewTree();
-        console.log(this._leaves)
     }
 
     private line(start: [number, number], direction: degrees, length: number, level: number): [number, number] {
@@ -136,7 +127,7 @@ export default class ProceduralTree {
                 (end[1] + start[1]) / 2,
             ]
             const leaf: LeafSprite = {
-                sprite: this._scene.add.sprite(midpoint[0], midpoint[1], LeavesSprite.key)
+                sprite: this._scene.add.sprite(midpoint[0], midpoint[1], LeavesSprite.key /*, Phaser.Math.Between(0, LeavesSprites.numSprites-1) */)
                     .setOrigin(0.5, 0.5)
                     .setScale(this._leafScale() * TILE_SCALE * this.randomizeLen()),
                 origin: midpoint,

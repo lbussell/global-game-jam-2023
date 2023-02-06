@@ -58,6 +58,13 @@ export const LeavesSprite: Sprite = {
     assetLocation: "assets/leaf.png"
 }
 
+export const LeavesSprites: SpriteSheet = {
+    key: "leavessprites",
+    assetLocation: "assets/smalltreeleaves.png",
+    numSprites: 14,
+    size: { h: 8, w: 8 }
+}
+
 export const ArcadeFont: Font = {
     key: "arcadeFont",
     assetLocation: "assets/fonts/gem.png",
