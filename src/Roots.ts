@@ -69,6 +69,11 @@ export default class Root {
             return false;
         }
 
+        if (type.rootType == RootTypes.Stretch)
+        {
+            this._maxGhosts *= 2;
+        }
+
         let closestPointIndexes: number[] = [];
         let cloesestPointDistances: number[] = [];
         for (let i=0; i<this._explorationPoints; i++)
@@ -138,6 +143,11 @@ export default class Root {
         }
 
         this.drawGhost(bestPoints, type);
+
+        if (type.rootType == RootTypes.Stretch)
+        {
+            this._maxGhosts /= 2;
+        }
 
         return true;
     }
