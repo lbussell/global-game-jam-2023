@@ -302,7 +302,7 @@ export default class Root {
                     this._warningText.destroy();
                 }
                 
-                this._warningText = this._scene.add.text(this._scene.input.mousePointer.x, this._scene.input.mousePointer.y, 'Not enough resources to place root');
+                this._warningText = this._scene.add.text(this._scene.input.mousePointer.worldX, this._scene.input.mousePointer.worldY, 'Not enough resources to place root');
                 this._scene.time.delayedCall(3000, () => this._warningText.destroy(), [], this);
                 return false;
             }
