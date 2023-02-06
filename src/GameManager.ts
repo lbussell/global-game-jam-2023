@@ -101,9 +101,9 @@ export default class GameManager {
         this.resourceAmounts.sunlight -= photosynthesisAmt;
 
 
-        this.resourceAmounts.waterRate = (this.resourceAmounts.water - oldWater)/dt;
-        this.resourceAmounts.glucoseRate = (this.resourceAmounts.glucose - oldGlucose)/dt;
-        this.resourceAmounts.potassiumRate = (this.resourceAmounts.potassium - oldPotassium)/dt;
+        this.resourceAmounts.waterRate = (this.resourceAmounts.water - oldWater)/dt + 0.1;
+        this.resourceAmounts.glucoseRate = (this.resourceAmounts.glucose - oldGlucose)/dt + 0.1;
+        this.resourceAmounts.potassiumRate = (this.resourceAmounts.potassium - oldPotassium)/dt + 0.1;
     }
 
     // return true if the attach was successful
