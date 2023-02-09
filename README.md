@@ -1,4 +1,23 @@
-Live site: http://loganbussell.com/global-game-jam-2023/
+## Play here: http://loganbussell.com/global-game-jam-2023/
+
+## Credits: 
+![image](https://user-images.githubusercontent.com/6265129/217702069-58999dbc-b4bb-49b4-898d-d56edaf8d8f1.png)
+
+**Logan Bussell:** Engineering
+
+**Eli Goldin:**    Game Design
+
+**Hollis Lehv:**   Art, Engineering
+
+**Brian Ma:**      Music, Engineering
+
+**Nina Navazio:**  Writing
+
+**Shane Rhoads:**  Engineering
+
+**Jason Thiel:**   Engineering, Game Design
+
+
 
 ## Setup
 
