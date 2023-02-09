@@ -44,6 +44,12 @@ export default class AudioManager {
             this.aboveGround.play('aloop', { loop: true });
     }
 
+    public enterNewScene(scene: Phaser.Scene) {
+        this._camera = scene.cameras.main;
+        this._scene = scene;
+        this.groundLevelScrollValue = scene.cameras.main.scrollY;
+    }
+
     public interpolateVolume(){
         const currentDepth = this.groundLevelScrollValue - this._camera.scrollY + DEPTH_OFFSET;
 
